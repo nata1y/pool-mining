@@ -114,18 +114,12 @@ public class Pool {
     }
 
     public void changeMiners(){
-        System.out.println("??????before??????/");
-        System.out.println(this.sabotagers.size());
-        System.out.println("???????before?????/");
         int n;
         int[] newRate;
         newRate = calculateBestInfRate();
 
         for(Pool p: sim.getPools()){
             int poolId = p.getId();
-            System.out.println("/_________/");
-            System.out.println(newRate[poolId] + " - newrate; " + infiltrationRates[poolId] + " - infrate;");
-            System.out.println("/_________/");
             while(newRate[poolId] > infiltrationRates[poolId]){
                 infiltrationRates[poolId]++;
                 p.increaseOwnInfiltrationRate();
@@ -140,9 +134,7 @@ public class Pool {
 
                     AttackingMiner am = new AttackingMiner(this.sim, m.getId(), this.id);
                     am.setAttackedPoolId(poolId);
-                    System.out.println("bef add " + this.sabotagers.size());
                     this.sabotagers.add(am);
-                    System.out.println("af add " + this.sabotagers.size());
 
                     ArrayList<Miner> newMembers = p.getMembers();
                     newMembers.add(am);
@@ -160,7 +152,7 @@ public class Pool {
 
                 ArrayList<AttackingMiner> remove = new ArrayList<>();
                 AttackingMiner am = new AttackingMiner(sim, 0, 0);
-                
+
                 for(int i = 0; i < sabotagers.size(); i++){
                     if(sabotagers.get(i).getAttackedPoolId() == poolId){
                         am = sabotagers.get(i);
@@ -179,14 +171,9 @@ public class Pool {
                 HonestMiner hm = new HonestMiner(this.sim, am.getId(), this.id);
                 this.members.add(hm);
 
-                System.out.println("bef " + this.sabotagers.size());
                 sabotagers.remove(am);
-                System.out.println("af " + this.sabotagers.size());
             }
         }
-        System.out.println("????????????/");
-        System.out.println(this.sabotagers.size());
-        System.out.println("????????????/");
     }
 
     public void updateFees(){
@@ -298,14 +285,7 @@ public class Pool {
         DoubleMatrix coef_matrix = new DoubleMatrix(coefs);
         DoubleMatrix const_matrix = new DoubleMatrix(constants);
         DoubleMatrix res = Solve.solve(coef_matrix, const_matrix);
-        //System.out.println(res.get(id));
-        /*
-            DoubleMatrix res_try = (Solve.pinv(coef_matrix)).mmul(const_matrix);
-            System.out.println(res_try.get(id));
-            System.out.println(res_try.get(id));
-            double[] ress = RevenueCalculator.calculateRevenues(coefs, constants);
-            System.out.println(ress[id]);
-        */
+
         return res.get(id);
     }
 
@@ -340,9 +320,7 @@ public class Pool {
         newRevDen /= denominator;
         return newRevDen;
     }
-*/
 
-    
     public double calculateExpectedRevenueDensityHardCoded(int[] rates){
         Pool p;
         double m1, m2, x12, x21, R1, R2;
@@ -370,6 +348,7 @@ public class Pool {
 
         return newRevDen;
     }
+**/
 
     public int[] calculateBestInfRate(){
         int[] bestRate = infiltrationRates;
@@ -382,20 +361,7 @@ public class Pool {
         generateInfiltrationPermutations(top, 0, new int[sim.getAmountPools()]);
 
         for(int[] permutation: this.infeltrationPermutations){
-           /* System.out.println("--------------S---------------");
-            for(int i = 0; i < permutation.length; i++){
-                System.out.print(permutation[i]);
-                System.out.print(" ");
-            }
-            System.out.println();
-            System.out.println("------------------------------");*/
             double res = calculateExpectedRevenueDensityGeneral(permutation);
-            //double res2 = calculateExpectedRevenueDensityHardCoded(permutation);
-            //System.out.println(res + " VS " + res2 + " naxrev " + maxRev);
-            /** double check = calculateExpectedRevenueDensity(permutation);
-
-            System.out.println(res + " VS " + check);
-            */
 
             if(res > maxRev){
                 maxRev = res;
@@ -406,14 +372,7 @@ public class Pool {
         this.infeltrationPermutations.clear();
         this.revenueDensityPrevRound = this.revenueDensity;
         this.revenueDensity = maxRev;
-        
-        System.out.println("--------------!!!!!!!!!!!!!---------------");
-            for(int i = 0; i < bestRate.length; i++){
-                System.out.print(bestRate[i]);
-                System.out.print(" ");
-            }
-            System.out.println();
-            System.out.println("-------------!!!!!!!!!!!!!!!-----------------");
+
         return bestRate;
     }
 
