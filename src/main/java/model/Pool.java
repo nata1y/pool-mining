@@ -6,28 +6,6 @@ import javafx.util.Pair;
 import org.jblas.DoubleMatrix;
 import org.jblas.Solve;
 import org.jblas.*;
-/**
- * why do we need to know revenue densities from a previous step?????? in paper
- * i calculate using gaussian elimination
- *
- * precision of revenue densities
- *
- * normalize reward given at a step?!!!!!!!!!
- *
- * they converge but some of then attack some of them not
- *
- * 3 pool case also works with equally sized pools
- *
- * Good value for revebue per block + normalization
- *
- * simplification with assigning tasks to miners based of their ppow (pPoW + 1)
- *
- * TODO:
- * - convergance based on revenue density not changing anymore
- * - "earn less if noone has attacked" is decided based on revenue densities. see paper for the questions
- *    even coded for per miner income and this does not occur
- * - do i really need graphs?
- */
 
 public class Pool {
 

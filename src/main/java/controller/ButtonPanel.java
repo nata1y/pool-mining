@@ -46,6 +46,7 @@ public class ButtonPanel extends JPanel implements ActionListener, Observer {
         grid.add(controller, BorderLayout.CENTER);
 
         this.add(grid);
+        play();
     }
 
     public void actionPerformed(ActionEvent e) {

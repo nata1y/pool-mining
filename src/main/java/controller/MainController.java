@@ -19,6 +19,7 @@ public class MainController implements Observer {
     private int bound;
     private ButtonPanel bp;
     private JFrame frame;
+    private int counter = 10;
 
 
     public MainController(){}
@@ -66,7 +67,7 @@ public class MainController implements Observer {
                 new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         try {
-                            startSimulations(Integer.parseInt(miners.getText()), Integer.parseInt(pools.getText()), Integer.parseInt(runs.getText()), 29);
+                            startSimulations(Integer.parseInt(miners.getText()), Integer.parseInt(pools.getText()), Integer.parseInt(runs.getText()), 499);
                             setup.dispose();
                         } catch (RuntimeException ex) {
                             ex.printStackTrace(System.err);
@@ -126,10 +127,43 @@ public class MainController implements Observer {
 
     public void update(Observable source, Object arg) {
         if(currentSimulation.isConverged()){
-            //deletePrevGUI();
-            System.out.println(currentSimulation.getTime());
+            deletePrevGUI();
+            /*
+            int m1 = (bound + 1);
+            int m2 = 100 - m1;
+            double x1, x2;
+            if(m1 <= m2/4){
+                x1 = 0;
+                x2 = m2/2;
+            } else if(m2 <= m1/4){
+                x1 = m1/2;
+                x2 = 0;
+            } else{
+                x1 = Math.sqrt(m1 * m2) * (2 * Math.sqrt(m1) - Math.sqrt(m2)) / (Math.sqrt(m1) + Math.sqrt(m2));
+                x2 = Math.sqrt(m1 * m2) * (2 * Math.sqrt(m2) - Math.sqrt(m1)) / (Math.sqrt(m1) + Math.sqrt(m2));
+            }
+            
+            System.out.println("Convergence Time: " + currentSimulation.getTime());
+            System.out.println("Starting rates (m1, m2): " + m1 + " , " + m2);
+            System.out.println("Converge Rates (x1, x2): " + currentSimulation.getPools().get(1).getOwnInfiltrationRate() + " , " + currentSimulation.getPools().get(0).getOwnInfiltrationRate());
+            System.out.println("Expected rates from the paper: " + Math.round(x1) + " , " + Math.round(x2));
+            System.out.println();
+            */
+            System.out.print(currentSimulation.getTime());
+            System.out.print(" ");
+
             if(amountSim > 0) {
-                startSimulations(amountAgents, amountPools, amountSim, bound + 1);
+                if(counter > 1){
+                    counter --;
+                    startSimulations(amountAgents, amountPools, amountSim, bound);
+                } else {
+                    counter = 10;
+                    System.out.println();
+                    System.out.println(amountAgents + 50);
+                    System.out.println();
+                    startSimulations(amountAgents + 50, amountPools, amountSim, bound);
+                }
+                
             }
         }
     }

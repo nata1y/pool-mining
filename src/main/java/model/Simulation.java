@@ -31,12 +31,12 @@ public class Simulation extends Observable {
 
 	private void initialize(){
 		for(int i = 0; i < amountMiners; i++){
-			//int pool = i/(amountMiners/amountPools);
+			int pool = i/(amountMiners/amountPools);
 			//int pool = rand.nextInt(amountPools);
-			int pool = 0;
+			/*int pool = 0;
 			if(i > bound){
 				pool = 1;
-			}
+			}*/
 			HonestMiner m = new HonestMiner(this, i, pool);
 			miners.add(m);
 		}
