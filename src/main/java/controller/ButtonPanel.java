@@ -17,6 +17,7 @@ public class ButtonPanel extends JPanel implements ActionListener, Observer {
     private ScheduledFuture<?> updateLoop;
     private TableController t;
     private JLabel showTime;
+    private JLabel solo;
     private final ScheduledThreadPoolExecutor scheduler;
     private JButton play;
 
@@ -40,13 +41,18 @@ public class ButtonPanel extends JPanel implements ActionListener, Observer {
         play.setActionCommand("play");
         play.addActionListener(this);
 
+        solo = new JLabel();
+        solo.setVerticalAlignment(JLabel.NORTH);
+        solo.setText("Amount solo miners: " + this.sim.getAmountSoloMiners());
+        controller.add(solo);
+
         controller.add(play);
 
         grid.add(t, BorderLayout.CENTER);
         grid.add(controller, BorderLayout.CENTER);
 
         this.add(grid);
-        play();
+        //play();
     }
 
     public void actionPerformed(ActionEvent e) {

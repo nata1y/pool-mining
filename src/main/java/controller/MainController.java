@@ -15,11 +15,12 @@ public class MainController implements Observer {
     private JPanel pane;
     private int amountAgents;
     private int amountPools;
+    private int amountSoloM;
     private int amountSim;
     private int bound;
     private ButtonPanel bp;
     private JFrame frame;
-    private int counter = 10;
+    private int counter = 1;
 
 
     public MainController(){}
@@ -42,9 +43,9 @@ public class MainController implements Observer {
 
         JPanel body = new JPanel();
         // amount of pools and amount of miners
-        body.setLayout(new GridLayout(3, 2));
+        body.setLayout(new GridLayout(4, 2));
 
-        JLabel label = new JLabel("Amount of Miners: ");
+        JLabel label = new JLabel("Amount of Miners in pools: ");
         JTextField field = new JTextField(Integer.toString(10));
         body.add(label);
         body.add(field);
@@ -55,6 +56,12 @@ public class MainController implements Observer {
         body.add(label);
         body.add(field);
         JTextField pools = field;
+
+        label = new JLabel("Amount of Solo Miners: ");
+        field = new JTextField(Integer.toString(2));
+        body.add(label);
+        body.add(field);
+        JTextField solom = field;
 
         label = new JLabel("Amount of Runs: ");
         field = new JTextField(Integer.toString(1));
@@ -67,7 +74,7 @@ public class MainController implements Observer {
                 new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         try {
-                            startSimulations(Integer.parseInt(miners.getText()), Integer.parseInt(pools.getText()), Integer.parseInt(runs.getText()), 499);
+                            startSimulations(Integer.parseInt(miners.getText()), Integer.parseInt(pools.getText()), Integer.parseInt(solom.getText()), Integer.parseInt(runs.getText()), 22);
                             setup.dispose();
                         } catch (RuntimeException ex) {
                             ex.printStackTrace(System.err);
@@ -87,13 +94,13 @@ public class MainController implements Observer {
     }
 
 
-    public void startSimulations(int amountAgents, int amountPools, int amountSim, int bound) {
+    public void startSimulations(int amountAgents, int amountPools, int amountSoloM, int amountSim, int bound) {
         this.amountAgents = amountAgents;
         this.amountPools = amountPools;
         this.bound = bound;
         this.amountSim = amountSim - 1;
 
-        currentSimulation = new Simulation(amountAgents, amountPools, bound);
+        currentSimulation = new Simulation(amountAgents, amountPools, amountSoloM, bound);
         currentSimulation.addObserver(this);
         window = createAndShowGUI();
     }
@@ -127,7 +134,7 @@ public class MainController implements Observer {
 
     public void update(Observable source, Object arg) {
         if(currentSimulation.isConverged()){
-            deletePrevGUI();
+            //deletePrevGUI();
             /*
             int m1 = (bound + 1);
             int m2 = 100 - m1;
@@ -155,13 +162,13 @@ public class MainController implements Observer {
             if(amountSim > 0) {
                 if(counter > 1){
                     counter --;
-                    startSimulations(amountAgents, amountPools, amountSim, bound);
+                    startSimulations(amountAgents, amountPools, amountSoloM, amountSim, bound);
                 } else {
-                    counter = 10;
+                    counter = 1;
                     System.out.println();
                     System.out.println(amountAgents + 50);
                     System.out.println();
-                    startSimulations(amountAgents + 50, amountPools, amountSim, bound);
+                    startSimulations(amountAgents + 50, amountPools, amountSoloM, amountSim, bound);
                 }
                 
             }

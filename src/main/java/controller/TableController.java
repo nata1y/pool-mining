@@ -65,8 +65,8 @@ public class TableController extends JPanel{
                 "Fee",
                 "Current revenue density",
                 "Revenue if no one attack",
-                "Cuurent revenue per miner for the whole game",
-                "Revenue per miner for the whole game if noone attack"
+                "Cuurent revenue for the whole game",
+                "Revenue for the whole game if noone attack"
         };
 
         private ArrayList<Pool> pools;

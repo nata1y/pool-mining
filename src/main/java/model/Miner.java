@@ -9,6 +9,7 @@ public abstract class Miner {
 	private final int id;
 	private double fPoW;
 	private double pPoW;
+	private double ownRevDen;
 	private double revenueInOwnPool = 0;
 
 	private final double miningPower = 1;
@@ -23,6 +24,7 @@ public abstract class Miner {
 
 	abstract void work();
 	abstract Pair<Double, Double> publish();
+	//abstract void calculateOwnRevDen();
 
 	/** function for calculating poisson distrubution
 	 taken from
@@ -45,7 +47,7 @@ public abstract class Miner {
 	}
 
 	public void setRevenueInOwnPool(double revenueInOwnPool) {
-		this.revenueInOwnPool = revenueInOwnPool;
+		this.revenueInOwnPool += revenueInOwnPool;
 	}
 
 	public double getfPoW() {
@@ -83,5 +85,21 @@ public abstract class Miner {
 	public void generatePoW(){
 		this.fPoW = poissonDistribution(probabiltyMineBlock * this.task.getTime());
 		this.pPoW = poissonDistribution(miningPower * this.task.getTime());
+	}
+
+	public void setOwnRevDen(double rd) {
+		this.ownRevDen = rd;
+	}
+
+	public double getOwnRevDen() {
+		return ownRevDen;
+	}
+
+	public void setSim(Simulation sim) {
+		this.sim = sim;
+	}
+
+	public Simulation getSim() {
+		return sim;
 	}
 }

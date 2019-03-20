@@ -1,8 +1,12 @@
 package model;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.*;
+import java.math.RoundingMode; 
 
 import javafx.util.Pair;
+
 import org.jblas.DoubleMatrix;
 import org.jblas.Solve;
 import org.jblas.*;
@@ -20,15 +24,12 @@ public class Pool {
     private int[] infiltrationRates;
     private ArrayList<int[]> infeltrationPermutations;
     private double[] revenueFromSabotagers;
-    private double incomeWholeGame;
     private double incomeWholeGameNooneattack;
     //members are miners who mine in own pool, sabotagers - who sabotage. 2 disjoint sets
     private ArrayList<Miner> members;
     private ArrayList<AttackingMiner> sabotagers = new ArrayList<>();
     // first double - partial proof of work; second - full proof of work
     private HashMap<Integer, Pair<Double, Double>> PoW = new HashMap<>();
-
-    private final double revenueForBlock = 100;
 
     public Pool(Simulation sim, int id, double fee, ArrayList<Miner> miners){
         this.sim = sim;
@@ -37,7 +38,6 @@ public class Pool {
         this.contributionFees = fee;
         this.ownInfiltrationRate = 0;
         this.members = miners;
-        this.incomeWholeGame = 0;
         this.incomeWholeGameNooneattack = 0;
 
         this.infiltrationRates = new int[sim.getAmountPools()];
@@ -88,7 +88,7 @@ public class Pool {
             }
         }
 
-        incomeWholeGameNooneattack += this.revenue / (members.size() + sabotagers.size() - ownInfiltrationRate);
+        incomeWholeGameNooneattack += this.revenue;
     }
 
     public void changeMiners(){
@@ -160,7 +160,6 @@ public class Pool {
 
     public double publishRevenue(){
         double perMinerRev = this.revenue/(members.size() + sabotagers.size());
-        incomeWholeGame += perMinerRev;
         return perMinerRev;
     }
 
@@ -173,7 +172,7 @@ public class Pool {
     }
 
     public void collectRevenueFromMiner(Miner m){
-        this.revenue += revenueForBlock;
+        this.revenue += sim.getRevenueForBlock();
     }
 
     public void sendRevenueToAll(){
@@ -326,9 +325,10 @@ public class Pool {
 
         return newRevDen;
     }
-**/
+*/
 
     public int[] calculateBestInfRate(){
+        //DecimalFormat df = new DecimalFormat("#.####");
         int[] bestRate = infiltrationRates;
 
         // feasible range from paper
@@ -337,15 +337,33 @@ public class Pool {
         double maxRev = calculateExpectedRevenueDensityGeneral(infiltrationRates);
 
         generateInfiltrationPermutations(top, 0, new int[sim.getAmountPools()]);
-
+        /**System.out.println("__________________");
+        System.out.println(maxRev);
+        System.out.println(df.format(maxRev));*/
         for(int[] permutation: this.infeltrationPermutations){
             double res = calculateExpectedRevenueDensityGeneral(permutation);
+
+            /*
+            BigDecimal bd = new BigDecimal(Double.toString(maxRev));
+            bd = bd.setScale(5, RoundingMode.HALF_UP);
+
+            BigDecimal bd2 = new BigDecimal(Double.toString(res));
+            bd2 = bd2.setScale(5, RoundingMode.HALF_UP);
+
+            if(bd2.doubleValue() > bd.doubleValue()){
+                maxRev = res;
+                bestRate = permutation;
+            }*/
 
             if(res > maxRev){
                 maxRev = res;
                 bestRate = permutation;
             }
         }
+        /**
+        System.out.println(maxRev);
+        System.out.println(df.format(maxRev));
+        System.out.println("__________________");*/
 
         this.infeltrationPermutations.clear();
         this.revenueDensityPrevRound = this.revenueDensity;
@@ -443,7 +461,16 @@ public class Pool {
     }
 
     public double getIncomeWholeGame() {
-        return incomeWholeGame;
+        double income = 0;
+        for(Miner m: members){
+            if(m instanceof HonestMiner){
+                income += m.getRevenueInOwnPool();
+            }
+        }
+        for(Miner m: sabotagers){
+            income += m.getRevenueInOwnPool();
+        }
+        return income;
     }
 
     public double getIncomeWholeGameNooneattack() {

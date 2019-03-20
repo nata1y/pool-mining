@@ -3,10 +3,17 @@ package model;
 import java.util.*;
 import java.util.Random;
 
+import javafx.util.Pair;
+
+/**
+ * precision 100 77 23
+ */
+
 
 public class Simulation extends Observable {
 	private int time = 0;
 	private int amountMiners;
+	private int amountSoloMiners;
 	private int amountPools;
 	private boolean isConverged;
 	private ArrayList<Pool> pools;
@@ -18,9 +25,12 @@ public class Simulation extends Observable {
 	private final int s = 1;
 	private int currentPoolRoundRobin = 0;
 
-	public Simulation(int amountMiners, int amountPools, int bound){
+	private final double revenueForBlock = 100;
+
+	public Simulation(int amountMiners, int amountPools, int amountSoloM, int bound){
 		this.amountMiners = amountMiners;
 		this.amountPools = amountPools;
+		this.amountSoloMiners = amountSoloM;
 		this.isConverged = false;
 		this.bound = bound;
 		this.poolRevenues = new double[amountPools];
@@ -31,8 +41,20 @@ public class Simulation extends Observable {
 
 	private void initialize(){
 		for(int i = 0; i < amountMiners; i++){
-			int pool = i/(amountMiners/amountPools);
-			//int pool = rand.nextInt(amountPools);
+			//int pool = i/(amountMiners/amountPools);
+			int pool = rand.nextInt(amountPools);
+
+			//50 m 4 p 30 sim
+			/*int pool = 0;
+			if(i >= 2*amountMiners/10 && i < 4*amountMiners/10){
+				pool = 1;
+			}
+			if(i >= 4*amountMiners/10 && i < 6*amountMiners/10){
+				pool = 2;
+			}
+			if(i >= 6*amountMiners/10){
+				pool = 3;
+			}*/
 			/*int pool = 0;
 			if(i > bound){
 				pool = 1;
@@ -64,16 +86,27 @@ public class Simulation extends Observable {
 			p.setRevenueDensityPrevRound(set);
 			p.setRevenueDensityIfNooneAttack(set);
 		}
+
+		for(int i = 0 ; i < amountSoloMiners; i++){
+			SoloMiner m = new SoloMiner(this, amountMiners + i);
+			miners.add(m);
+		}
 	}
 
 	public void timeStep(){
 		time ++;
 
-		/*for(Miner m: this.miners){
-			//instance of SOlo miner
-			//generateTask();
-			//m.work();
-		}*/
+		for(Miner m: this.miners){
+			if(m instanceof SoloMiner){
+				((SoloMiner) m).work();
+				((SoloMiner) m).generatePoW();
+				Pair<Double, Double> pow = ((SoloMiner) m).publish();
+				if(pow.getValue() > 1.0){
+					((SoloMiner) m).setRevenueInOwnPool(revenueForBlock);
+				}
+				((SoloMiner) m).calculateOwnRevDen();
+			}
+		}
 
 		for(Pool p: this.pools){
 			p.assignTasks();
@@ -87,16 +120,12 @@ public class Simulation extends Observable {
 
 			this.poolRevenues[poolId] = p.publishRevenue();
 			poolId++;
+			p.sendRevenueToAll();
 		}
 
 		/*for(Miner m: this.miners){
 			//change Pool based on PoolRevenue;
 		}*/
-
-		for(Pool p: this.pools){
-			p.sendRevenueToAll();
-			//p.changeMiners();
-		}
 
 		if(time % s == 0){
 			pools.get(currentPoolRoundRobin).changeMiners();
@@ -124,6 +153,10 @@ public class Simulation extends Observable {
 		return amountMiners;
 	}
 
+	public ArrayList<Miner> getMiners() {
+		return miners;
+	}
+
 	public int getAmountPools() {
 		return amountPools;
 	}
@@ -138,6 +171,14 @@ public class Simulation extends Observable {
 
 	public boolean isConverged() {
 		return isConverged;
+	}
+
+	public double getRevenueForBlock(){
+		return revenueForBlock;
+	}
+
+	public int getAmountSoloMiners() {
+		return amountSoloMiners;
 	}
 
 }
