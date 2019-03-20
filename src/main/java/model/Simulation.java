@@ -24,6 +24,7 @@ public class Simulation extends Observable {
 
 	private final int s = 1;
 	private int currentPoolRoundRobin = 0;
+	private int currentMinerRoundRobin = 0;
 
 	private final double revenueForBlock = 100;
 
@@ -99,13 +100,13 @@ public class Simulation extends Observable {
 		for(Miner m: this.miners){
 			if(m instanceof SoloMiner){
 				((SoloMiner) m).work();
-				((SoloMiner) m).generatePoW();
 				Pair<Double, Double> pow = ((SoloMiner) m).publish();
 				if(pow.getValue() > 1.0){
 					((SoloMiner) m).setRevenueInOwnPool(revenueForBlock);
 				}
-				((SoloMiner) m).calculateOwnRevDen();
 			}
+
+			m.calculateOwnRevDen();
 		}
 
 		for(Pool p: this.pools){
@@ -123,10 +124,6 @@ public class Simulation extends Observable {
 			p.sendRevenueToAll();
 		}
 
-		/*for(Miner m: this.miners){
-			//change Pool based on PoolRevenue;
-		}*/
-
 		if(time % s == 0){
 			pools.get(currentPoolRoundRobin).changeMiners();
 			currentPoolRoundRobin++;
@@ -139,6 +136,8 @@ public class Simulation extends Observable {
 					}
 				}
 			}
+
+			miners.get(currentMinerRoundRobin).changePool();
 		}
 
 		setChanged();

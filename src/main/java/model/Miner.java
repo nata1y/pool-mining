@@ -24,7 +24,7 @@ public abstract class Miner {
 
 	abstract void work();
 	abstract Pair<Double, Double> publish();
-	//abstract void calculateOwnRevDen();
+	abstract void calculateOwnRevDen();
 
 	/** function for calculating poisson distrubution
 	 taken from

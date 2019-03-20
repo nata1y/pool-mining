@@ -25,9 +25,9 @@ public class HonestMiner extends Miner{
         this.getTask().work();
     }
 
-    public void changePool(){
-
-    }
+    public void calculateOwnRevDen(){
+		this.setOwnRevDen(getSim().getPools().get(poolId).getRevenueDensity()); 
+	}
 
     public double getRevenue() {
         return revenue;

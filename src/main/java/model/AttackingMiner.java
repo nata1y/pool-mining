@@ -19,12 +19,12 @@ public class AttackingMiner extends Miner{
         return pair;
     }
 
+    public void calculateOwnRevDen(){
+		this.setOwnRevDen(getSim().getPools().get(poolId).getRevenueDensity()); 
+	}
+
     public void work(){
         this.getTask().work();
-    }
-
-    public void changePool(){
-
     }
 
     public int getPoolId(){
