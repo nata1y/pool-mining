@@ -110,6 +110,9 @@ public class Pool {
                     ArrayList<Miner> newMembers = p.getMembers();
                     newMembers.add(am);
                     p.setMembers(newMembers);
+
+                    sim.getMiners().remove(m);
+                    sim.getMiners().add(am);
                 }
             }
 
@@ -134,6 +137,9 @@ public class Pool {
                 this.members.add(hm);
 
                 sabotagers.remove(am);
+
+                sim.getMiners().remove(am);
+                sim.getMiners().add(hm);
             }
         }
     }

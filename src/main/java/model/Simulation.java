@@ -95,16 +95,6 @@ public class Simulation extends Observable {
 	}
 
 	public void timeStep(){
-		System.out.println("1_____________");
-		for(Pool p: pools){
-			System.out.println("Pool id " + p.getId() + " members:");
-			for(Miner m: p.getMembers()){
-                System.out.print(m.getId());
-                System.out.print(" ");
-            }
-            System.out.println();
-		}
-		System.out.println("1_____________");
 		time ++;
 
 		for(Miner m: this.miners){
@@ -139,7 +129,7 @@ public class Simulation extends Observable {
 		}
 
 		if(time % s == 0){
-			System.out.println("!!: " + miners.get(currentMinerRoundRobin).getId());
+
 			if(miners.get(currentMinerRoundRobin) instanceof HonestMiner){
 				miners.get(currentMinerRoundRobin).changePool();
 			}
@@ -150,34 +140,18 @@ public class Simulation extends Observable {
 				checkConvergence();
 			}
 
-			System.out.println("2_____________");
-		for(Pool p: pools){
-			System.out.println("Pool id " + p.getId() + " members:");
-			for(Miner m: p.getMembers()){
-                System.out.print(m.getId());
-                System.out.print(" ");
-            }
-            System.out.println();
-		}
-		System.out.println("2_____________");
-
 			pools.get(currentPoolRoundRobin).changeMiners();
 			currentPoolRoundRobin++;
 			if(currentPoolRoundRobin == pools.size()){
 				currentPoolRoundRobin = 0;
 				checkConvergence();
 			}
-
-			System.out.println("3_____________");
-		for(Pool p: pools){
-			System.out.println("Pool id " + p.getId() + " members:");
-			for(Miner m: p.getMembers()){
-                System.out.print(m.getId());
-                System.out.print(" ");
-            }
-            System.out.println();
 		}
-		System.out.println("3_____________");
+
+		if(isConverged){
+			for(Pool p: pools){
+				System.out.println("id " + p.getId() + " " + (p.getMembers().size() + p.getSabotagers().size() - p.getOwnInfiltrationRate()));
+			}
 		}
 
 		setChanged();
@@ -207,6 +181,10 @@ public class Simulation extends Observable {
 
 	public ArrayList<Miner> getMiners() {
 		return miners;
+	}
+
+	public void setMiners(ArrayList<Miner> a) {
+		this.miners = a;
 	}
 
 	public int getAmountPools() {

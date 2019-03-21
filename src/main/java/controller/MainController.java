@@ -156,8 +156,8 @@ public class MainController implements Observer {
             System.out.println("Expected rates from the paper: " + Math.round(x1) + " , " + Math.round(x2));
             System.out.println();
             */
-            System.out.print(currentSimulation.getTime());
-            System.out.print(" ");
+            //System.out.print(currentSimulation.getTime());
+            //System.out.print(" ");
 
             if(amountSim > 0) {
                 if(counter > 1){
@@ -165,9 +165,9 @@ public class MainController implements Observer {
                     startSimulations(amountAgents, amountPools, amountSoloM, amountSim, bound);
                 } else {
                     counter = 1;
-                    System.out.println();
+                    /*System.out.println();
                     System.out.println(amountAgents + 50);
-                    System.out.println();
+                    System.out.println();*/
                     startSimulations(amountAgents + 50, amountPools, amountSoloM, amountSim, bound);
                 }
                 
