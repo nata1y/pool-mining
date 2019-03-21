@@ -120,7 +120,7 @@ public class Pool {
                 infiltrationRates[poolId]--;
                 p.decreaseOwnInfiltrationRate();
 
-                AttackingMiner am = new AttackingMiner(sim, 0, 0);
+                AttackingMiner am = new AttackingMiner(sim, -1, -1);
 
                 for(int i = 0; i < sabotagers.size(); i++){
                     if(sabotagers.get(i).getAttackedPoolId() == poolId){
@@ -331,8 +331,7 @@ public class Pool {
         System.out.println(maxRev);
         System.out.println(df.format(maxRev));*/
         for(int[] permutation: this.infeltrationPermutations){
-            double res = calculateExpectedRevenueDensityGeneral(permutation);
-
+            Double res = calculateExpectedRevenueDensityGeneral(permutation);
             /*
             BigDecimal bd = new BigDecimal(Double.toString(maxRev));
             bd = bd.setScale(5, RoundingMode.HALF_UP);
@@ -349,6 +348,12 @@ public class Pool {
                 maxRev = res;
                 bestRate = permutation;
             }
+
+            // edge case
+            if(res.isNaN() && sumInfRate(permutation) == 0){
+                maxRev = Double.POSITIVE_INFINITY;
+                bestRate = permutation;
+            }
         }
         /**
         System.out.println(maxRev);
@@ -360,6 +365,14 @@ public class Pool {
         this.revenueDensity = maxRev;
 
         return bestRate;
+    }
+
+    public int sumInfRate(int[] p){
+        int res = 0;
+        for(int n: p){
+            res += n;
+        }
+        return res;
     }
 
     public void generateInfiltrationPermutations(int possibleAmountMiners, int pools, int[] permutation) {
@@ -394,6 +407,10 @@ public class Pool {
         return sabotagers;
     }
 
+    public void setSabotagers(ArrayList<AttackingMiner> s) {
+        this.sabotagers = s;
+    }
+
     public double getContributionFees() {
         return contributionFees;
     }
@@ -424,6 +441,10 @@ public class Pool {
 
     public int getOwnInfiltrationRate() {
         return ownInfiltrationRate;
+    }
+
+    public void setOwnInfiltrationRate(int rate) {
+        ownInfiltrationRate = rate;
     }
 
     public double getRevenueDensityIfNooneAttack() {

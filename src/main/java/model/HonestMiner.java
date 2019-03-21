@@ -27,7 +27,7 @@ public class HonestMiner extends Miner{
         this.getTask().work();
     }
 
-    public void changePool(){
+    public void changePool(int placeRoundRobin){
         Pool candidatePool = null;
         double bestDen = getOwnRevDen();
 
@@ -39,16 +39,9 @@ public class HonestMiner extends Miner{
         }
 
         if(candidatePool != null){
-            //System.out.println("Own id: " + getId() + "; poolId " + poolId + " cand pool id: " + candidatePool.getId());
             Pool ownPool = getSim().getPools().get(poolId);
-
-            /*System.out.println("miners in cand pool: ");
-            for(Miner m: candidatePool.getMembers()){
-                System.out.print(m.getId());
-                System.out.print(" ");
-            }
-            System.out.println();*/
             ArrayList<Miner> newMembers = candidatePool.getMembers();
+
             newMembers.add(this);
             candidatePool.setMembers(newMembers);
 

@@ -1,5 +1,6 @@
 package model;
 
+import java.util.*;
 import javafx.util.Pair;
 
 public class AttackingMiner extends Miner{
@@ -27,7 +28,39 @@ public class AttackingMiner extends Miner{
         this.getTask().work();
     }
 
-    public void changePool(){
+    public void changePool(int placeRoundRobin){
+        Pool candidatePool = null;
+        double bestDen = getOwnRevDen();
+
+        for(Pool p: getSim().getPools()){
+            if(p.getRevenueDensity() > bestDen){
+                bestDen = p.getRevenueDensity();
+                candidatePool = p;
+            }
+        }
+
+        if(candidatePool != null){
+            Pool ownPool = getSim().getPools().get(poolId);
+            Pool attackedPool = getSim().getPools().get(attackedPoolId);
+            ArrayList<Miner> attackedPoolMembers = attackedPool.getMembers();
+
+            attackedPoolMembers.remove(this);
+            attackedPool.setOwnInfiltrationRate(attackedPool.getOwnInfiltrationRate() - 1);
+            ownPool.getInfiltrationRates()[attackedPoolId] -= 1;
+            attackedPool.setMembers(attackedPoolMembers);
+
+            ArrayList<Miner> newMembers = candidatePool.getMembers();
+            HonestMiner newhm = new HonestMiner(getSim(), getId(), candidatePool.getId());
+            newMembers.add(newhm);
+            candidatePool.setMembers(newMembers);
+
+            ArrayList<AttackingMiner> newSabotagers = ownPool.getSabotagers();
+            newSabotagers.remove(this);
+            ownPool.setSabotagers(newSabotagers);
+
+            getSim().getMiners().remove(this);
+            getSim().getMiners().add(placeRoundRobin, newhm);
+        }
     }
 
     public int getPoolId(){

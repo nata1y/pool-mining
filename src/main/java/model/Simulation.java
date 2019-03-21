@@ -105,8 +105,6 @@ public class Simulation extends Observable {
 					((SoloMiner) m).setRevenueInOwnPool(revenueForBlock);
 				}
 			}
-
-			//m.calculateOwnRevDen();
 		}
 
 		for(Pool p: this.pools){
@@ -129,11 +127,9 @@ public class Simulation extends Observable {
 		}
 
 		if(time % s == 0){
-
-			if(miners.get(currentMinerRoundRobin) instanceof HonestMiner){
-				miners.get(currentMinerRoundRobin).changePool();
-			}
+			miners.get(currentMinerRoundRobin).changePool(currentMinerRoundRobin);
 			currentMinerRoundRobin++;
+
 			if(currentMinerRoundRobin == miners.size()){
 				currentMinerRoundRobin = 0;
 				isConverged = true;
