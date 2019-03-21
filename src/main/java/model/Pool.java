@@ -327,6 +327,13 @@ public class Pool {
         double maxRev = calculateExpectedRevenueDensityGeneral(infiltrationRates);
 
         generateInfiltrationPermutations(top, 0, new int[sim.getAmountPools()]);
+
+        if(top == 0){
+            this.infeltrationPermutations.clear();
+            this.revenueDensityPrevRound = this.revenueDensity;
+            this.revenueDensity = 0.0;
+            return infeltrationPermutations.get(0);
+        }
         /**System.out.println("__________________");
         System.out.println(maxRev);
         System.out.println(df.format(maxRev));*/
@@ -350,7 +357,7 @@ public class Pool {
             }
 
             // edge case
-            if(res.isNaN() && sumInfRate(permutation) == 0){
+            if(res.isNaN() && sumInfRate(permutation) == 0 && revenueDensity != 0){
                 maxRev = Double.POSITIVE_INFINITY;
                 bestRate = permutation;
             }
