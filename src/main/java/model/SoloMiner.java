@@ -33,4 +33,8 @@ public class SoloMiner extends Miner {
         }
         setOwnRevDen(1 / (getSim().getAmountMiners() - simAttackingPower));
     }
+
+    public void changePool(){
+        
+    }
 }

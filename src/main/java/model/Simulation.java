@@ -95,6 +95,16 @@ public class Simulation extends Observable {
 	}
 
 	public void timeStep(){
+		System.out.println("1_____________");
+		for(Pool p: pools){
+			System.out.println("Pool id " + p.getId() + " members:");
+			for(Miner m: p.getMembers()){
+                System.out.print(m.getId());
+                System.out.print(" ");
+            }
+            System.out.println();
+		}
+		System.out.println("1_____________");
 		time ++;
 
 		for(Miner m: this.miners){
@@ -106,7 +116,7 @@ public class Simulation extends Observable {
 				}
 			}
 
-			m.calculateOwnRevDen();
+			//m.calculateOwnRevDen();
 		}
 
 		for(Pool p: this.pools){
@@ -124,24 +134,67 @@ public class Simulation extends Observable {
 			p.sendRevenueToAll();
 		}
 
+		for(Miner m: miners){
+			m.calculateOwnRevDen();
+		}
+
 		if(time % s == 0){
+			System.out.println("!!: " + miners.get(currentMinerRoundRobin).getId());
+			if(miners.get(currentMinerRoundRobin) instanceof HonestMiner){
+				miners.get(currentMinerRoundRobin).changePool();
+			}
+			currentMinerRoundRobin++;
+			if(currentMinerRoundRobin == miners.size()){
+				currentMinerRoundRobin = 0;
+				isConverged = true;
+				checkConvergence();
+			}
+
+			System.out.println("2_____________");
+		for(Pool p: pools){
+			System.out.println("Pool id " + p.getId() + " members:");
+			for(Miner m: p.getMembers()){
+                System.out.print(m.getId());
+                System.out.print(" ");
+            }
+            System.out.println();
+		}
+		System.out.println("2_____________");
+
 			pools.get(currentPoolRoundRobin).changeMiners();
 			currentPoolRoundRobin++;
 			if(currentPoolRoundRobin == pools.size()){
 				currentPoolRoundRobin = 0;
-				isConverged = true;
-				for (Pool p: pools){
-					if(p.getRevenueDensity() != p.getRevenueDensityPrevRound()){
-						isConverged = false;
-					}
-				}
+				checkConvergence();
 			}
 
-			miners.get(currentMinerRoundRobin).changePool();
+			System.out.println("3_____________");
+		for(Pool p: pools){
+			System.out.println("Pool id " + p.getId() + " members:");
+			for(Miner m: p.getMembers()){
+                System.out.print(m.getId());
+                System.out.print(" ");
+            }
+            System.out.println();
+		}
+		System.out.println("3_____________");
 		}
 
 		setChanged();
 		notifyObservers();
+	}
+
+	public void checkConvergence(){
+		for (Miner m: miners){
+			if(m.getOwnRevDen() != m.getOwnRevDenPrevRound()){
+				isConverged = false;
+			}
+		}
+		for (Pool p: pools){
+			if(p.getRevenueDensity() != p.getRevenueDensityPrevRound()){
+				isConverged = false;
+			}
+		}
 	}
 
 	public double[] getPoolRevenues() {

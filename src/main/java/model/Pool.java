@@ -28,8 +28,6 @@ public class Pool {
     //members are miners who mine in own pool, sabotagers - who sabotage. 2 disjoint sets
     private ArrayList<Miner> members;
     private ArrayList<AttackingMiner> sabotagers = new ArrayList<>();
-    // first double - partial proof of work; second - full proof of work
-    private HashMap<Integer, Pair<Double, Double>> PoW = new HashMap<>();
 
     public Pool(Simulation sim, int id, double fee, ArrayList<Miner> miners){
         this.sim = sim;
@@ -48,9 +46,6 @@ public class Pool {
         this.revenueFromSabotagers = new double[sim.getAmountPools()];
         for(int i = 0; i < this.revenueFromSabotagers.length; i++){
             revenueFromSabotagers[i] = 0.0;
-        }
-        for(Miner m: miners){
-            PoW.put(m.getId(), new Pair<>(m.getpPoW(), m.getfPoW()));
         }
 
         this.infeltrationPermutations = new ArrayList<>();
@@ -81,7 +76,6 @@ public class Pool {
 
             if (!m.isWorking()) {
                 Pair<Double, Double> p = m.publish();
-                PoW.put(m.getId(), p);
                 if(p.getValue() > 1.0){
                     collectRevenueFromMiner(m);
                 }
@@ -108,7 +102,6 @@ public class Pool {
                 if (n < members.size()) {
                     Miner m = members.get(n);
                     members.remove(m);
-                    PoW.remove(m.getId());
 
                     AttackingMiner am = new AttackingMiner(this.sim, m.getId(), this.id);
                     am.setAttackedPoolId(poolId);
@@ -117,10 +110,6 @@ public class Pool {
                     ArrayList<Miner> newMembers = p.getMembers();
                     newMembers.add(am);
                     p.setMembers(newMembers);
-
-                    HashMap<Integer, Pair<Double, Double>> updatedMap = p.getPoW();
-                    updatedMap.put(am.getId(), new Pair<>(0.0, 0.0));
-                    p.setPoW(updatedMap);
                 }
             }
 
@@ -128,7 +117,6 @@ public class Pool {
                 infiltrationRates[poolId]--;
                 p.decreaseOwnInfiltrationRate();
 
-                ArrayList<AttackingMiner> remove = new ArrayList<>();
                 AttackingMiner am = new AttackingMiner(sim, 0, 0);
 
                 for(int i = 0; i < sabotagers.size(); i++){
@@ -141,10 +129,6 @@ public class Pool {
                 ArrayList<Miner> newMembers = p.getMembers();
                 newMembers.remove(am);
                 p.setMembers(newMembers);
-
-                HashMap<Integer, Pair<Double, Double>> updatedMap = p.getPoW();
-                updatedMap.remove(am.getId());
-                p.setPoW(updatedMap);
 
                 HonestMiner hm = new HonestMiner(this.sim, am.getId(), this.id);
                 this.members.add(hm);
@@ -410,14 +394,6 @@ public class Pool {
 
     public void setContributionFees(double fee) {
         this.contributionFees = fee;
-    }
-
-    public HashMap<Integer, Pair<Double, Double>> getPoW() {
-        return PoW;
-    }
-
-    public void setPoW(HashMap<Integer, Pair<Double, Double>> poW) {
-        PoW = poW;
     }
 
     public int[] getInfiltrationRates() {

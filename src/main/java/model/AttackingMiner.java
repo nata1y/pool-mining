@@ -27,6 +27,9 @@ public class AttackingMiner extends Miner{
         this.getTask().work();
     }
 
+    public void changePool(){
+    }
+
     public int getPoolId(){
         return this.poolId;
     }
