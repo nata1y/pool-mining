@@ -7,6 +7,9 @@ import javafx.util.Pair;
 
 /**
  * precision 100 77 23
+ * 
+ * convergence take MUCH MORE time because i estimate it in a shitty way
+ * should be better if allow all miners to switch pools
  */
 
 
@@ -19,6 +22,7 @@ public class Simulation extends Observable {
 	private ArrayList<Pool> pools;
 	private ArrayList<Miner> miners;
 	private double[] poolRevenues;
+	private int checkConvergence = 0;
 	private int bound;
 	private Random rand = new Random();
 
@@ -132,19 +136,25 @@ public class Simulation extends Observable {
 
 			if(currentMinerRoundRobin == miners.size()){
 				currentMinerRoundRobin = 0;
-				isConverged = true;
-				checkConvergence();
 			}
 
 			pools.get(currentPoolRoundRobin).changeMiners();
 			currentPoolRoundRobin++;
 			if(currentPoolRoundRobin == pools.size()){
 				currentPoolRoundRobin = 0;
-				checkConvergence();
+			}
+
+			isConverged = true;
+			checkConvergence();
+
+			if(isConverged){
+				checkConvergence ++;
+			} else {
+				checkConvergence = 0;
 			}
 		}
 
-		if(isConverged){
+		if(isConverged && checkConvergence >= amountMiners){
 			for(Pool p: pools){
 				System.out.println("id " + p.getId() + " " + (p.getMembers().size() + p.getSabotagers().size() - p.getOwnInfiltrationRate()));
 			}
