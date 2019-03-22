@@ -1,5 +1,7 @@
 package model;
 
+import java.util.*;
+
 import javafx.util.Pair;
 import model.Miner;
 
@@ -35,6 +37,25 @@ public class SoloMiner extends Miner {
     }
 
     public void changePool(int placeRoundRobin){
-        
+        Pool candidatePool = null;
+        double bestDen = getOwnRevDen();
+
+        for(Pool p: getSim().getPools()){
+            if(p.getRevenueDensity() > bestDen){
+                bestDen = p.getRevenueDensity();
+                candidatePool = p;
+            }
+        }
+
+        if(candidatePool != null){
+            ArrayList<Miner> newMembers = candidatePool.getMembers();
+            HonestMiner newhm = new HonestMiner(getSim(), getId(), candidatePool.getId());
+            newMembers.add(newhm);
+            candidatePool.setMembers(newMembers);
+
+            getSim().getMiners().remove(this);
+            getSim().getMiners().add(placeRoundRobin, newhm);
+            getSim().setAmountSoloMiners(getSim().getAmountSoloMiners() - 1);
+        }
     }
 }

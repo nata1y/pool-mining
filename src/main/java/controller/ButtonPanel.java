@@ -107,5 +107,6 @@ public class ButtonPanel extends JPanel implements ActionListener, Observer {
     public void update(Observable source, Object arg) {
         t.getPtm().fireTableDataChanged();
         showTime.setText("Time step: " + this.sim.getTime());
+        solo.setText("Amount solo miners: " + this.sim.getAmountSoloMiners());
     }
 }

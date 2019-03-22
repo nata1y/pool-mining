@@ -217,5 +217,9 @@ public class Simulation extends Observable {
 		return amountSoloMiners;
 	}
 
+	public void setAmountSoloMiners(int asm) {
+		this.amountSoloMiners = asm;
+	}
+
 }
 
