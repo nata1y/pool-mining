@@ -329,10 +329,11 @@ public class Pool {
         generateInfiltrationPermutations(top, 0, new int[sim.getAmountPools()]);
 
         if(top == 0){
+            int[] infp = infeltrationPermutations.get(0); 
             this.infeltrationPermutations.clear();
             this.revenueDensityPrevRound = this.revenueDensity;
-            this.revenueDensity = 0.0;
-            return infeltrationPermutations.get(0);
+            this.revenueDensity = Double.NaN;
+            return infp;
         }
         /**System.out.println("__________________");
         System.out.println(maxRev);

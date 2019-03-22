@@ -156,12 +156,12 @@ public class Simulation extends Observable {
 
 	public void checkConvergence(){
 		for (Miner m: miners){
-			if(m.getOwnRevDen() != m.getOwnRevDenPrevRound()){
+			if(m.getOwnRevDen() != m.getOwnRevDenPrevRound() && !Double.isNaN(m.getOwnRevDen())){
 				isConverged = false;
 			}
 		}
 		for (Pool p: pools){
-			if(p.getRevenueDensity() != p.getRevenueDensityPrevRound()){
+			if(p.getRevenueDensity() != p.getRevenueDensityPrevRound() && !Double.isNaN(p.getRevenueDensity())){
 				isConverged = false;
 			}
 		}
