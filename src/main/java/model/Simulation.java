@@ -10,6 +10,10 @@ import javafx.util.Pair;
  * 
  * convergence take MUCH MORE time because i estimate it in a shitty way
  * should be better if allow all miners to switch pools
+ * 
+ * no solo miners 2 pools m=100 all gather in 1 pool (which initially has larger mining power)
+ * EXCEPT 50%-50% when they all make half of the miners to attack and converge to the same size
+ * 
  */
 
 
@@ -46,8 +50,8 @@ public class Simulation extends Observable {
 
 	private void initialize(){
 		for(int i = 0; i < amountMiners; i++){
-			//int pool = i/(amountMiners/amountPools);
-			int pool = rand.nextInt(amountPools);
+			int pool = i/(amountMiners/amountPools);
+			//int pool = rand.nextInt(amountPools);
 
 			//50 m 4 p 30 sim
 			/*int pool = 0;
@@ -158,6 +162,8 @@ public class Simulation extends Observable {
 			for(Pool p: pools){
 				System.out.println("id " + p.getId() + " " + (p.getMembers().size() + p.getSabotagers().size() - p.getOwnInfiltrationRate()));
 			}
+		} else {
+			isConverged = false;
 		}
 
 		setChanged();

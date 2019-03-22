@@ -74,7 +74,7 @@ public class MainController implements Observer {
                 new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         try {
-                            startSimulations(Integer.parseInt(miners.getText()), Integer.parseInt(pools.getText()), Integer.parseInt(solom.getText()), Integer.parseInt(runs.getText()), 22);
+                            startSimulations(Integer.parseInt(miners.getText()), Integer.parseInt(pools.getText()), Integer.parseInt(solom.getText()), Integer.parseInt(runs.getText()), 49);
                             setup.dispose();
                         } catch (RuntimeException ex) {
                             ex.printStackTrace(System.err);
@@ -135,6 +135,9 @@ public class MainController implements Observer {
     public void update(Observable source, Object arg) {
         if(currentSimulation.isConverged()){
             //deletePrevGUI();
+            int m1 = (bound + 1);
+            int m2 = 100 - m1;
+            System.out.println("Starting rates (m1, m2): " + m1 + " , " + m2);
             /*
             int m1 = (bound + 1);
             int m2 = 100 - m1;
@@ -168,7 +171,7 @@ public class MainController implements Observer {
                     /*System.out.println();
                     System.out.println(amountAgents + 50);
                     System.out.println();*/
-                    startSimulations(amountAgents + 50, amountPools, amountSoloM, amountSim, bound);
+                    startSimulations(amountAgents, amountPools, amountSoloM, amountSim, bound + 1);
                 }
                 
             }

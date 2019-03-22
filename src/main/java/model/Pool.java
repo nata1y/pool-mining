@@ -351,18 +351,19 @@ public class Pool {
                 maxRev = res;
                 bestRate = permutation;
             }*/
-
+            System.out.println(maxRev);
             if(res > maxRev){
                 maxRev = res;
                 bestRate = permutation;
             }
 
             // edge case
-            if(res.isNaN() && sumInfRate(permutation) == 0 && revenueDensity != 0){
+            if(res.isNaN() && sumInfRate(permutation) == 0 && revenueDensity != 0 && members.size() > sim.getAmountMiners()/2){
                 maxRev = Double.POSITIVE_INFINITY;
                 bestRate = permutation;
             }
         }
+        System.out.println("__________________");
         /**
         System.out.println(maxRev);
         System.out.println(df.format(maxRev));

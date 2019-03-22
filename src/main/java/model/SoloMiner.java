@@ -37,7 +37,7 @@ public class SoloMiner extends Miner {
     }
 
     public void changePool(int placeRoundRobin){
-        Pool candidatePool = null;
+        /*Pool candidatePool = null;
         double bestDen = getOwnRevDen();
 
         for(Pool p: getSim().getPools()){
@@ -56,6 +56,6 @@ public class SoloMiner extends Miner {
             getSim().getMiners().remove(this);
             getSim().getMiners().add(placeRoundRobin, newhm);
             getSim().setAmountSoloMiners(getSim().getAmountSoloMiners() - 1);
-        }
+        }*/
     }
 }
