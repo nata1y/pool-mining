@@ -328,13 +328,6 @@ public class Pool {
 
         generateInfiltrationPermutations(top, 0, new int[sim.getAmountPools()]);
 
-        if(top == 0){
-            int[] infp = infeltrationPermutations.get(0); 
-            this.infeltrationPermutations.clear();
-            this.revenueDensityPrevRound = this.revenueDensity;
-            this.revenueDensity = Double.NaN;
-            return infp;
-        }
         /**System.out.println("__________________");
         System.out.println(maxRev);
         System.out.println(df.format(maxRev));*/
@@ -351,19 +344,28 @@ public class Pool {
                 maxRev = res;
                 bestRate = permutation;
             }*/
-            System.out.println(maxRev);
             if(res > maxRev){
                 maxRev = res;
                 bestRate = permutation;
             }
 
             // edge case
-            if(res.isNaN() && sumInfRate(permutation) == 0 && revenueDensity != 0 && members.size() > sim.getAmountMiners()/2){
+            //AVOID SUMPERM = 0
+            if(res.isNaN() && sumInfRate(permutation) == 0 && top > sim.getAmountMiners()/2){
                 maxRev = Double.POSITIVE_INFINITY;
                 bestRate = permutation;
             }
+
+            /*for(int n:permutation){
+                System.out.print(n);
+                System.out.print(" ");
+            }
+            System.out.println(maxRev);
+            System.out.println(res);
+            System.out.println(top);*/
         }
-        System.out.println("__________________");
+        //System.out.println("__________________");
+
         /**
         System.out.println(maxRev);
         System.out.println(df.format(maxRev));

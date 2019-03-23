@@ -32,7 +32,7 @@ public class HonestMiner extends Miner{
         double bestDen = getOwnRevDen();
 
         for(Pool p: getSim().getPools()){
-            if(p.getRevenueDensity() > bestDen){
+            if(p.getRevenueDensity() > bestDen || Double.isNaN(bestDen)){
                 bestDen = p.getRevenueDensity();
                 candidatePool = p;
             }

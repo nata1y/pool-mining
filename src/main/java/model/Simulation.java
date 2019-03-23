@@ -14,6 +14,7 @@ import javafx.util.Pair;
  * no solo miners 2 pools m=100 all gather in 1 pool (which initially has larger mining power)
  * EXCEPT 50%-50% when they all make half of the miners to attack and converge to the same size
  * 
+ * 3 equally sized pools - all gather in 1
  */
 
 
