@@ -325,51 +325,30 @@ public class Pool {
         int top = members.size() - ownInfiltrationRate + sabotagers.size();
 
         double maxRev = calculateExpectedRevenueDensityGeneral(infiltrationRates);
-
+        System.out.println("curr max rev initiall new steppp: " + maxRev);
         generateInfiltrationPermutations(top, 0, new int[sim.getAmountPools()]);
 
-        /**System.out.println("__________________");
-        System.out.println(maxRev);
-        System.out.println(df.format(maxRev));*/
         for(int[] permutation: this.infeltrationPermutations){
             Double res = calculateExpectedRevenueDensityGeneral(permutation);
-            /*
-            BigDecimal bd = new BigDecimal(Double.toString(maxRev));
-            bd = bd.setScale(5, RoundingMode.HALF_UP);
 
-            BigDecimal bd2 = new BigDecimal(Double.toString(res));
-            bd2 = bd2.setScale(5, RoundingMode.HALF_UP);
-
-            if(bd2.doubleValue() > bd.doubleValue()){
-                maxRev = res;
+            if(Double.isNaN(maxRev) && sumInfRate(permutation) == 0 && top == sim.getAmountMiners()){
+                maxRev = 1.0/(sim.getAmountMiners()); //+ sim.getAmountSoloMiners()); //Double.POSITIVEINFINITY
                 bestRate = permutation;
-            }*/
+                System.out.println("curr max rev hard coded: " + maxRev);
+            }
+
             if(res > maxRev){
+                System.out.println("curr max rev: " + maxRev);
+                System.out.println("res: " + res);
+                for(int n:permutation){
+                    System.out.print(n);
+                    System.out.print(" ");
+                }
+                System.out.println();
                 maxRev = res;
                 bestRate = permutation;
             }
-
-            // edge case
-            //AVOID SUMPERM = 0
-            if(res.isNaN() && sumInfRate(permutation) == 0 && top > sim.getAmountMiners()/2){
-                maxRev = Double.POSITIVE_INFINITY;
-                bestRate = permutation;
-            }
-
-            /*for(int n:permutation){
-                System.out.print(n);
-                System.out.print(" ");
-            }
-            System.out.println(maxRev);
-            System.out.println(res);
-            System.out.println(top);*/
         }
-        //System.out.println("__________________");
-
-        /**
-        System.out.println(maxRev);
-        System.out.println(df.format(maxRev));
-        System.out.println("__________________");*/
 
         this.infeltrationPermutations.clear();
         this.revenueDensityPrevRound = this.revenueDensity;
@@ -432,6 +411,10 @@ public class Pool {
 
     public int[] getInfiltrationRates() {
         return infiltrationRates;
+    }
+
+    public void setInfiltrationRates(int[] infr) {
+        infiltrationRates = infr;
     }
 
     public double getRevenueDensity() {

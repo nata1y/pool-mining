@@ -15,6 +15,10 @@ import javafx.util.Pair;
  * EXCEPT 50%-50% when they all make half of the miners to attack and converge to the same size
  * 
  * 3 equally sized pools - all gather in 1
+ * 
+ * black magic with rev dens
+ * 
+ * if all have option to switch pool at one step, converge to one super pool very fast
  */
 
 
@@ -143,11 +147,15 @@ public class Simulation extends Observable {
 				currentMinerRoundRobin = 0;
 			}
 
-			pools.get(currentPoolRoundRobin).changeMiners();
-			currentPoolRoundRobin++;
-			if(currentPoolRoundRobin == pools.size()){
+			for(Pool p: pools){
+				checkPool(p);
+			}
+
+			if(currentPoolRoundRobin >= pools.size()){
 				currentPoolRoundRobin = 0;
 			}
+			pools.get(currentPoolRoundRobin).changeMiners();
+			currentPoolRoundRobin++;
 
 			isConverged = true;
 			checkConvergence();
@@ -169,6 +177,29 @@ public class Simulation extends Observable {
 
 		setChanged();
 		notifyObservers();
+	}
+
+	public void checkPool(Pool p){
+		if((p.getMembers().size() - p.getOwnInfiltrationRate() + p.getSabotagers().size()) == 0){
+			for(Miner m: p.getMembers()){
+				System.out.println("remove miner " + m.getId() + " from pool " + p.getId());
+				HonestMiner nm = new HonestMiner(this, m.getId(), ((AttackingMiner)m).getPoolId());
+				pools.get(((AttackingMiner)m).getPoolId()).getMembers().add(nm);
+				pools.get(((AttackingMiner)m).getPoolId()).getSabotagers().remove(m);
+				miners.add(nm);
+				miners.remove(m);
+			}
+			for(Pool pool: pools){
+				if(!pool.equals(p)){
+					int [] infr = pool.getInfiltrationRates();
+					infr[p.getId()] = 0;
+					pool.setInfiltrationRates(infr);
+				}
+			}
+			p.setOwnInfiltrationRate(0);
+			p.setMembers(new ArrayList<Miner>());
+			p.setSabotagers(new ArrayList<AttackingMiner>());
+		}
 	}
 
 	public void checkConvergence(){

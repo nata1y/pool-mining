@@ -80,7 +80,11 @@ public class AttackingMiner extends Miner{
     }
 
     public void setRevenueInAttackedPool(double revenueInAttackedPool) {
-        this.revenueInAttackedPool = revenueInAttackedPool;
+        if(Double.isNaN(revenueInAttackedPool)){
+            this.revenueInAttackedPool = 0;
+        } else{
+            this.revenueInAttackedPool = revenueInAttackedPool;
+        }
     }
 
 }
