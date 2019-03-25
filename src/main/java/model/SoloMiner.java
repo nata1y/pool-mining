@@ -33,11 +33,11 @@ public class SoloMiner extends Miner {
         for(Pool p: getSim().getPools()){
             simAttackingPower += p.getOwnInfiltrationRate();
         }
-        setOwnRevDen(1 / (getSim().getAmountMiners() - simAttackingPower));
+        setOwnRevDen(1 / (getSim().getMiners().size() - simAttackingPower));
     }
 
     public void changePool(int placeRoundRobin){
-        /*Pool candidatePool = null;
+        Pool candidatePool = null;
         double bestDen = getOwnRevDen();
 
         for(Pool p: getSim().getPools()){
@@ -56,6 +56,6 @@ public class SoloMiner extends Miner {
             getSim().getMiners().remove(this);
             getSim().getMiners().add(placeRoundRobin, newhm);
             getSim().setAmountSoloMiners(getSim().getAmountSoloMiners() - 1);
-        }*/
+        }
     }
 }

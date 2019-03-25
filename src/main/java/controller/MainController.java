@@ -135,6 +135,9 @@ public class MainController implements Observer {
     public void update(Observable source, Object arg) {
         if(currentSimulation.isConverged()){
             //deletePrevGUI();
+            /*int m1 = (bound + 1);
+            int m2 = 100 - m1;
+            System.out.println("Starting rates (m1, m2): " + m1 + " , " + m2);*/
             /*
             int m1 = (bound + 1);
             int m2 = 100 - m1;
@@ -165,9 +168,6 @@ public class MainController implements Observer {
                     startSimulations(amountAgents, amountPools, amountSoloM, amountSim, bound);
                 } else {
                     counter = 1;
-                    /*System.out.println();
-                    System.out.println(amountAgents + 50);
-                    System.out.println();*/
                     startSimulations(amountAgents, amountPools, amountSoloM, amountSim, bound + 1);
                 }
                 

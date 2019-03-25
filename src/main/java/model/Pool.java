@@ -210,7 +210,7 @@ public class Pool {
         int loyalMiners = members.size() - ownInfiltrationRate + sabotagers.size();
 
         directRevenue = (double)(loyalMiners - newInfRate) /
-                (sim.getAmountMiners() - simAttackingPower);
+                (sim.getMiners().size() - simAttackingPower);
 
         constants[id][0] = directRevenue / (loyalMiners + ownInfiltrationRate);
         coefs[id][id] = 1;
@@ -236,7 +236,7 @@ public class Pool {
                 loyalMiners = p.getMembers().size() - p.getOwnInfiltrationRate() + p.getSabotagers().size();
 
                 directRevenue = (double)(loyalMiners - infRate) /
-                        (sim.getAmountMiners() - simAttackingPower);
+                        (sim.getMiners().size() - simAttackingPower);
 
                 constants[poolId][0] = directRevenue / (loyalMiners + ownNewInfRate);
                 coefs[poolId][poolId] = 1;
@@ -325,15 +325,14 @@ public class Pool {
         int top = members.size() - ownInfiltrationRate + sabotagers.size();
 
         double maxRev = calculateExpectedRevenueDensityGeneral(infiltrationRates);
-        System.out.println("curr max rev initiall new steppp: " + maxRev);
         generateInfiltrationPermutations(top, 0, new int[sim.getAmountPools()]);
 
         for(int[] permutation: this.infeltrationPermutations){
             Double res = calculateExpectedRevenueDensityGeneral(permutation);
 
             // edge case
-            if(Double.isNaN(maxRev) && top >= sim.getAmountMiners()/sim.getAmountPools()){
-                maxRev = 1.0/(sim.getAmountMiners());
+            if(Double.isNaN(maxRev) && top >= sim.getMiners().size()/sim.getAmountPools()){
+                maxRev = 1.0/(sim.getMiners().size());
                 bestRate = permutation;
             }
 

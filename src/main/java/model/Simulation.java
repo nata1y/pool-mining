@@ -55,7 +55,7 @@ public class Simulation extends Observable {
 
 	private void initialize(){
 		for(int i = 0; i < amountMiners; i++){
-			int pool = i/(amountMiners/amountPools);
+			//int pool = i/(amountMiners/amountPools);
 			//int pool = rand.nextInt(amountPools);
 
 			//50 m 4 p 30 sim
@@ -69,10 +69,10 @@ public class Simulation extends Observable {
 			if(i >= 6*amountMiners/10){
 				pool = 3;
 			}*/
-			/*int pool = 0;
+			int pool = 0;
 			if(i > bound){
 				pool = 1;
-			}*/
+			}
 			HonestMiner m = new HonestMiner(this, i, pool);
 			miners.add(m);
 		}
@@ -182,7 +182,6 @@ public class Simulation extends Observable {
 	public void checkPool(Pool p){
 		if((p.getMembers().size() - p.getOwnInfiltrationRate() + p.getSabotagers().size()) == 0){
 			for(Miner m: p.getMembers()){
-				System.out.println("remove miner " + m.getId() + " from pool " + p.getId());
 				HonestMiner nm = new HonestMiner(this, m.getId(), ((AttackingMiner)m).getPoolId());
 				pools.get(((AttackingMiner)m).getPoolId()).getMembers().add(nm);
 				pools.get(((AttackingMiner)m).getPoolId()).getSabotagers().remove(m);
