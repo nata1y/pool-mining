@@ -331,20 +331,13 @@ public class Pool {
         for(int[] permutation: this.infeltrationPermutations){
             Double res = calculateExpectedRevenueDensityGeneral(permutation);
 
-            if(Double.isNaN(maxRev) && sumInfRate(permutation) == 0 && top == sim.getAmountMiners()){
-                maxRev = 1.0/(sim.getAmountMiners()); //+ sim.getAmountSoloMiners()); //Double.POSITIVEINFINITY
+            // edge case
+            if(Double.isNaN(maxRev) && top >= sim.getAmountMiners()/sim.getAmountPools()){
+                maxRev = 1.0/(sim.getAmountMiners());
                 bestRate = permutation;
-                System.out.println("curr max rev hard coded: " + maxRev);
             }
 
             if(res > maxRev){
-                System.out.println("curr max rev: " + maxRev);
-                System.out.println("res: " + res);
-                for(int n:permutation){
-                    System.out.print(n);
-                    System.out.print(" ");
-                }
-                System.out.println();
                 maxRev = res;
                 bestRate = permutation;
             }
@@ -355,14 +348,6 @@ public class Pool {
         this.revenueDensity = maxRev;
 
         return bestRate;
-    }
-
-    public int sumInfRate(int[] p){
-        int res = 0;
-        for(int n: p){
-            res += n;
-        }
-        return res;
     }
 
     public void generateInfiltrationPermutations(int possibleAmountMiners, int pools, int[] permutation) {
