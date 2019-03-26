@@ -11,22 +11,58 @@ import org.jblas.DoubleMatrix;
 import org.jblas.Solve;
 import org.jblas.*;
 
+/**
+ * Pool class represent a mining pool in a simulation.
+ */
 public class Pool {
 
+    /**
+     * Simulation where this pool is initialized.
+     */
     private Simulation sim;
+    /**
+     * Unique id of the pool.
+     */
     private final int id;
+    /**
+     * Contribution fees charged from each member.
+     */
     private double contributionFees;
+    /**
+     * Total revenue at each step.
+     */
     private double revenue;
+    /**
+     * Revenue desity values for the current round, previous round and if no attack was happened.
+     */
     private double revenueDensity;
     private double revenueDensityPrevRound;
     private double revenueDensityIfNooneAttack;
+    /**
+     * Rate at which pool is infiltrated by sabotagers.
+     */
     private int ownInfiltrationRate;
+    /**
+     * Own infiltration rates for every other pool.
+     */
     private int[] infiltrationRates;
+    /**
+     * Possible infiltration rates permutation.
+     * Necessary for finding arg max of revenue desity function.
+     */
     private ArrayList<int[]> infeltrationPermutations;
+    /**
+     * Income for the whole game, and income if noone would attack.
+     */
     private double incomeWholeGameNooneattack;
     private double incomeWholeGame;
-    //members are miners who mine in own pool, sabotagers - who sabotage. 2 disjoint sets
+    /**
+     * All mining members.
+     */
     private ArrayList<Miner> members;
+    /**
+     * Sabotaging members.
+     */
     private ArrayList<AttackingMiner> sabotagers = new ArrayList<>();
 
     public Pool(Simulation sim, int id, double fee, ArrayList<Miner> miners){
@@ -47,11 +83,18 @@ public class Pool {
         this.infeltrationPermutations = new ArrayList<>();
     }
 
-    // SIMPLIFICATION
+    /**
+     * Assign miner a task based on their partial proof of work.
+     * 
+     * @param miner which will get new task.
+     */
     static void assignTask(Miner m){
         m.setTask(new Task((int)m.getpPoW() + 1));
     }
 
+    /**
+     * Assign task to all non-working miners.
+     */
     public void assignTasks(){
         for(Miner m: members) {
             if (!m.isWorking()) {
@@ -61,12 +104,20 @@ public class Pool {
         }
     }
 
+    /**
+     * Make miners work for one time step.
+     */
     public void roundOfWork(){
         for(Miner m: members){
             m.work();
         }
     }
 
+    /**
+     * Update miners proof of work if they are done with the task.
+     * Collect revenue if full proof of work satisfies.
+     * Update income for the whole game in case noone would attack.
+     */
     public void updatePoF(){
         for(Miner m: members){
             if (!m.isWorking()) {
@@ -80,11 +131,16 @@ public class Pool {
         incomeWholeGameNooneattack += this.revenue;
     }
 
+    /**
+     * Change infiltration rates to all other pools.
+     */
     public void changeMiners(){
         int n;
         int[] newRate;
+        // Find arg max of own revenue density function.
         newRate = calculateBestInfRate();
 
+        // Switch own miners between pools accordingly.
         for(Pool p: sim.getPools()){
             int poolId = p.getId();
             while(newRate[poolId] > infiltrationRates[poolId]){
@@ -143,11 +199,19 @@ public class Pool {
 
     }
 
+    /**
+     * Publish own revenue (in the simulation).
+     * 
+     * @return revenue earned for the last step.
+     */
     public double publishRevenue(){
         double perMinerRev = this.revenue/(members.size() + sabotagers.size());
         return perMinerRev;
     }
 
+    /**
+     * Collect revenue earned by sabotaging miners.
+     */
     public void collectRevenueFromSabotagers(){
         for(AttackingMiner m: this.sabotagers){
             if(!Double.isNaN(m.getRevenueInAttackedPool())){
@@ -157,10 +221,17 @@ public class Pool {
         }
     }
 
+    /**
+     * Collect revenue from a miner who found a block.
+     */
     public void collectRevenueFromMiner(Miner m){
         this.revenue += sim.getRevenueForBlock();
     }
 
+    /**
+     * Divide total revenue from the last step between all miners
+     * based on their partial proof of work.
+     */
     public void sendRevenueToAll(){
         double amountpow = 0;
         for(int i = 0; i < this.sabotagers.size(); i++){
@@ -189,7 +260,15 @@ public class Pool {
         this.revenue = 0;    
     }
 
+    /**
+     * Calculate own revenue desity with the given infiltration rates.
+     * 
+     * @param rates infiltration rates of all other pools.
+     * @return revenue density value.
+     */
     public double calculateExpectedRevenueDensityGeneral(int[] rates){
+
+        // calculate own coeficients in a system of linear equations
         int newInfRate = 0;
         double directRevenue;
         double[][] coefs = new double[sim.getAmountPools()][sim.getAmountPools()];
@@ -219,7 +298,7 @@ public class Pool {
             }
         }
 
-        // calculate coefs for all other pools except the one that changes miners
+        // calculate coefs for all other pools
         for(Pool p: sim.getPools()){
             int poolId = p.getId();
             int infRate = 0;
@@ -247,6 +326,7 @@ public class Pool {
             }
         }
 
+        // Use jblas to find result
         DoubleMatrix coef_matrix = new DoubleMatrix(coefs);
         DoubleMatrix const_matrix = new DoubleMatrix(constants);
         DoubleMatrix res = Solve.solve(coef_matrix, const_matrix);
@@ -285,19 +365,25 @@ public class Pool {
     }
 */
 
+    /**
+     * Calculates best infiltration rate for this pool against all other pool.
+     * 
+     * @return best infiltration rate based on the simulation values from the last round.
+     */
     public int[] calculateBestInfRate(){
         int[] bestRate = infiltrationRates;
 
-        // feasible range from paper
+        // Feasible range for attacking miners from paper.
         int top = members.size() - ownInfiltrationRate + sabotagers.size();
 
         double maxRev = calculateExpectedRevenueDensityGeneral(infiltrationRates);
         generateInfiltrationPermutations(top, 0, new int[sim.getAmountPools()]);
 
+        // Choose infiltration rates that yield max of revenue density function.
         for(int[] permutation: this.infeltrationPermutations){
             Double res = calculateExpectedRevenueDensityGeneral(permutation);
 
-            // edge case
+            // Edge case when every majority of miners converge into 1 pool and there are empty pools.
             if(Double.isNaN(maxRev) && top >= sim.getMiners().size()/sim.getAmountPools()){
                 maxRev = 1.0/(sim.getMiners().size());
                 bestRate = permutation;
@@ -316,6 +402,12 @@ public class Pool {
         return bestRate;
     }
 
+    /**
+     * Generate possible infiltration rates.
+     * 
+     * @param possibleAmountMiners maximum amount of miners that can sabotage. 
+     * @param permutation current permutation that is being generated.
+     */
     public void generateInfiltrationPermutations(int possibleAmountMiners, int pools, int[] permutation) {
         if(pools == this.sim.getAmountPools()){
             this.infeltrationPermutations.add(permutation.clone());

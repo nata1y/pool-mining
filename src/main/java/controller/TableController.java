@@ -9,6 +9,9 @@ import java.awt.*;
 import java.util.ArrayList;
 import javax.swing.event.TableModelEvent;
 
+/**
+ * Controlls displayed table of the simulation.
+ */
 public class TableController extends JPanel{
     private Simulation sim;
     private PoolTableModel ptm;
@@ -19,8 +22,10 @@ public class TableController extends JPanel{
         buildTable();
     }
 
+    /**
+     * Representation of the displayed table.
+     */
     public void buildTable(){
-
         JTable pt;
         JPanel body;
         JLabel[] rows = new JLabel[this.sim.getAmountPools()];

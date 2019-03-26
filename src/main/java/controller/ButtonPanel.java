@@ -12,6 +12,9 @@ import java.awt.event.ActionEvent;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
+/**
+ * Controlls play button.
+ */
 public class ButtonPanel extends JPanel implements ActionListener, Observer {
     private Simulation sim;
     private ScheduledFuture<?> updateLoop;
@@ -55,6 +58,9 @@ public class ButtonPanel extends JPanel implements ActionListener, Observer {
         //play();
     }
 
+    /**
+     * If button is klicked evokes corresponding action.
+     */
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
             case "play":
@@ -68,6 +74,9 @@ public class ButtonPanel extends JPanel implements ActionListener, Observer {
         }
     }
 
+    /**
+     * Allow simulation to proceed.
+     */
     private void play() {
         if (isPlaying())
             return;
@@ -84,6 +93,9 @@ public class ButtonPanel extends JPanel implements ActionListener, Observer {
         play.setText("Stop");
     }
 
+    /**
+     * Pause the simulation.
+     */
     private void stop() {
         if (!isPlaying())
             return;
@@ -99,10 +111,16 @@ public class ButtonPanel extends JPanel implements ActionListener, Observer {
         return updateLoop != null && !updateLoop.isCancelled();
     }
 
+    /**
+     * Completelly stops and clears current simulation. 
+     */
     public void stopSimulation(){
         scheduler.shutdownNow();
     }
 
+    /**
+     * Update displayed time step and amount of solo miners.
+     */
     @Override
     public void update(Observable source, Object arg) {
         t.getPtm().fireTableDataChanged();

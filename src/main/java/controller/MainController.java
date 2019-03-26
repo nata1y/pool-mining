@@ -25,12 +25,17 @@ public class MainController implements Observer {
 
     public MainController(){}
 
+    /**
+     * Set up the simulation. 
+     */
     public void setup() {
         if (window != null) {
             window.dispose();
             window = null;
         }
 
+        /* Take initial amount of pool miners, pools, solo miners and simulation repetitons
+           from the user input */
         final JFrame setup = new JFrame("");
         setup.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -42,7 +47,6 @@ public class MainController implements Observer {
         create.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
 
         JPanel body = new JPanel();
-        // amount of pools and amount of miners
         body.setLayout(new GridLayout(4, 2));
 
         JLabel label = new JLabel("Amount of Miners in pools: ");
@@ -93,7 +97,9 @@ public class MainController implements Observer {
         setup.setVisible(true);
     }
 
-
+    /**
+     * Create simulation with given parameters.
+     */
     public void startSimulations(int amountAgents, int amountPools, int amountSoloM, int amountSim, int bound) {
         this.amountAgents = amountAgents;
         this.amountPools = amountPools;
@@ -105,6 +111,9 @@ public class MainController implements Observer {
         window = createAndShowGUI();
     }
 
+    /**
+     * Create simulation frame and start the simulation.
+     */
     private JFrame createAndShowGUI() {
         frame = new JFrame("Simulation");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -124,6 +133,9 @@ public class MainController implements Observer {
         return frame;
     }
 
+    /**
+     * Stop the simulation ad selete simulation frame.
+     */
     private void deletePrevGUI() {
         frame.dispose();
         window.dispose();
@@ -131,8 +143,11 @@ public class MainController implements Observer {
 
     }
 
-
+    /**
+     * Get simulation parameters and update the whole game.
+     */
     public void update(Observable source, Object arg) {
+        // If the simulation has converged.
         if(currentSimulation.isConverged()){
             //deletePrevGUI();
             /*int m1 = (bound + 1);
@@ -162,6 +177,7 @@ public class MainController implements Observer {
             //System.out.print(currentSimulation.getTime());
             //System.out.print(" ");
 
+            //Start next one simulation with new parameters.
             if(amountSim > 0) {
                 if(counter > 1){
                     counter --;

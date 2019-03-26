@@ -21,24 +21,56 @@ import javafx.util.Pair;
  * if all have option to switch pool at one step, converge to one super pool very fast
  */
 
-
+/**
+ * Main simulation class. Here, the simulation is initialized and proceed.
+ */
 public class Simulation extends Observable {
+
+	/**
+	 * An integer that keeps track of time.
+	 */
 	private int time = 0;
+	/**
+	 * Three separate variable to store amount of pool miners, solo miners and pools in the simulation.
+	 */
 	private int amountMiners;
 	private int amountSoloMiners;
 	private int amountPools;
+	/**
+	 * A boolean to signal that all pools in a simulation has converged to a fixed size.
+	 */
 	private boolean isConverged;
+	/**
+	 * ArrayLists with all miners and all pools.
+	 */
 	private ArrayList<Pool> pools;
 	private ArrayList<Miner> miners;
+	/**
+	 * Array with pool revenues at each step.
+	 */
 	private double[] poolRevenues;
+	/**
+	 * Additional convergence variable to check that all miners converge to a particular pool.
+	 */
 	private int checkConvergence = 0;
+	/**
+	 * Based on the bound variable miners can be separated quantitetivelly into different pools. 
+	 */
 	private int bound;
 	private Random rand = new Random();
-
+	/**
+	 * An integer that may be used for amount of steps normalization.
+	 */
 	private final int s = 1;
+	/**
+	 * Integer variables that keep track of which pool is it to change infiltration rates
+	 * and which miner turn is it to swtch pools.
+	 */
 	private int currentPoolRoundRobin = 0;
 	private int currentMinerRoundRobin = 0;
-
+	/**
+	 * Revenue for a mined block.
+	 */
 	private final double revenueForBlock = 100;
 
 	public Simulation(int amountMiners, int amountPools, int amountSoloM, int bound){
@@ -53,10 +85,13 @@ public class Simulation extends Observable {
 		initialize();
 	}
 
+	/**
+	 * Initialize simulation.
+	 */
 	private void initialize(){
 		for(int i = 0; i < amountMiners; i++){
-			//int pool = i/(amountMiners/amountPools);
-			int pool = rand.nextInt(amountPools);
+			int pool = i/(amountMiners/amountPools);
+			//int pool = rand.nextInt(amountPools);
 
 			//50 m 4 p 30 sim
 			/*int pool = 0;
@@ -107,6 +142,9 @@ public class Simulation extends Observable {
 		}
 	}
 
+	/**
+	 * Function that represents 1 time step of a simulation.
+	 */
 	public void timeStep(){
 		time ++;
 
@@ -139,6 +177,7 @@ public class Simulation extends Observable {
 			m.calculateOwnRevDen();
 		}
 
+		// Once in a while (determined by s), one pool can change its inf rates and one miner can switch pool.
 		if(time % s == 0){
 			miners.get(currentMinerRoundRobin).changePool(currentMinerRoundRobin);
 			currentMinerRoundRobin++;
@@ -167,6 +206,7 @@ public class Simulation extends Observable {
 			}
 		}
 
+		// Simulation has converged.
 		if(isConverged && checkConvergence >= (amountMiners + amountSoloMiners)){
 			for(Pool p: pools){
 				System.out.println("id " + p.getId() + " " + (p.getMembers().size() + p.getSabotagers().size() - p.getOwnInfiltrationRate()));
@@ -179,6 +219,12 @@ public class Simulation extends Observable {
 		notifyObservers();
 	}
 
+	/**
+	 * Checks whether pools has any loyal members.
+	 * If it does not, empty the pool and return all sabotagers to their own pools to mine honestly.
+	 * 
+	 * @param p pool that is being checked
+	 */
 	public void checkPool(Pool p){
 		if((p.getMembers().size() - p.getOwnInfiltrationRate() + p.getSabotagers().size()) == 0){
 			for(Miner m: p.getMembers()){
@@ -201,6 +247,10 @@ public class Simulation extends Observable {
 		}
 	}
 
+	/**
+	 * Check convergence of a simulation by checking whether any miner or any pool 
+	 * has changed its revenue densities from the previous round.
+	 */
 	public void checkConvergence(){
 		for (Miner m: miners){
 			if(m.getOwnRevDen() != m.getOwnRevDenPrevRound() && !Double.isNaN(m.getOwnRevDen())){
@@ -214,6 +264,11 @@ public class Simulation extends Observable {
 		}
 	}
 
+	/**
+	 * Calculates the mining power of a simulation.
+	 * 
+	 * @return amount of mining miners in a simulation.
+	 */
 	public int getMiningPower(){
 		int miningPower = 0;
 		for(Miner m: miners){
