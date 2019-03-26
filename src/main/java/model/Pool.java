@@ -23,8 +23,8 @@ public class Pool {
     private int ownInfiltrationRate;
     private int[] infiltrationRates;
     private ArrayList<int[]> infeltrationPermutations;
-    private double[] revenueFromSabotagers;
     private double incomeWholeGameNooneattack;
+    private double incomeWholeGame;
     //members are miners who mine in own pool, sabotagers - who sabotage. 2 disjoint sets
     private ArrayList<Miner> members;
     private ArrayList<AttackingMiner> sabotagers = new ArrayList<>();
@@ -36,16 +36,12 @@ public class Pool {
         this.contributionFees = fee;
         this.ownInfiltrationRate = 0;
         this.members = miners;
+        this.incomeWholeGame = 0;
         this.incomeWholeGameNooneattack = 0;
 
         this.infiltrationRates = new int[sim.getAmountPools()];
         for(int i = 0; i < sim.getAmountPools(); i++){
             infiltrationRates[i] = 0;
-        }
-
-        this.revenueFromSabotagers = new double[sim.getAmountPools()];
-        for(int i = 0; i < this.revenueFromSabotagers.length; i++){
-            revenueFromSabotagers[i] = 0.0;
         }
 
         this.infeltrationPermutations = new ArrayList<>();
@@ -73,7 +69,6 @@ public class Pool {
 
     public void updatePoF(){
         for(Miner m: members){
-
             if (!m.isWorking()) {
                 Pair<Double, Double> p = m.publish();
                 if(p.getValue() > 1.0){
@@ -155,8 +150,9 @@ public class Pool {
 
     public void collectRevenueFromSabotagers(){
         for(AttackingMiner m: this.sabotagers){
-            this.revenueFromSabotagers[m.getAttackedPoolId()] = m.getRevenueInAttackedPool();
-            this.revenue += m.getRevenueInAttackedPool();
+            if(!Double.isNaN(m.getRevenueInAttackedPool())){
+                this.revenue += m.getRevenueInAttackedPool();
+            }
             m.setRevenueInAttackedPool(0);
         }
     }
@@ -176,19 +172,21 @@ public class Pool {
         double eachRevenue = this.revenue/amountpow;
         for(AttackingMiner m: this.sabotagers){
             m.setRevenueInOwnPool(eachRevenue * m.getpPoW());
+            incomeWholeGame += eachRevenue * m.getpPoW();
         }
 
         for(Miner m: this.members){
             if(m instanceof HonestMiner){
                 m.setRevenueInOwnPool(eachRevenue * m.getpPoW());
+                incomeWholeGame += eachRevenue * m.getpPoW();
             }
 
             if(m instanceof AttackingMiner){
                 ((AttackingMiner) m).setRevenueInAttackedPool(eachRevenue * m.getpPoW());
             }
         }
-
-        this.revenue = 0;
+        
+        this.revenue = 0;    
     }
 
     public double calculateExpectedRevenueDensityGeneral(int[] rates){
@@ -257,36 +255,6 @@ public class Pool {
     }
 
 /**
-    // Specific to 2-pool case!
-    // public double calculateRevenueDensity()
-    public double calculateExpectedRevenueDensity(int[] rates){
-        Pool p;
-        double newRevDen = 0;
-        double directRevenue, directRevenueOpponent;
-
-        if(this.id == 0){
-            p = sim.getPools().get(1);
-        } else{
-            p = sim.getPools().get(0);
-        }
-
-        int loyalMiners = members.size() - ownInfiltrationRate + sabotagers.size();
-        int loyalMinersApponet = p.getMembers().size() - p.getOwnInfiltrationRate() + p.getSabotagers().size();
-
-        directRevenue = (loyalMiners - rates[p.getId()]) /
-                (sim.getAmountMiners() - (double)ownInfiltrationRate - rates[p.getId()]);
-
-        directRevenueOpponent = (loyalMinersApponet - ownInfiltrationRate) /
-                (sim.getAmountMiners() - (double)ownInfiltrationRate - rates[p.getId()]);
-
-        newRevDen = directRevenue * loyalMinersApponet + rates[p.getId()] * (directRevenue + directRevenueOpponent);
-
-        double denominator = loyalMinersApponet * loyalMiners + loyalMiners * rates[p.getId()]
-                + loyalMinersApponet * ownInfiltrationRate;
-
-        newRevDen /= denominator;
-        return newRevDen;
-    }
 
     public double calculateExpectedRevenueDensityHardCoded(int[] rates){
         Pool p;
@@ -318,7 +286,6 @@ public class Pool {
 */
 
     public int[] calculateBestInfRate(){
-        //DecimalFormat df = new DecimalFormat("#.####");
         int[] bestRate = infiltrationRates;
 
         // feasible range from paper
@@ -442,16 +409,7 @@ public class Pool {
     }
 
     public double getIncomeWholeGame() {
-        double income = 0;
-        for(Miner m: members){
-            if(m instanceof HonestMiner){
-                income += m.getRevenueInOwnPool();
-            }
-        }
-        for(Miner m: sabotagers){
-            income += m.getRevenueInOwnPool();
-        }
-        return income;
+        return incomeWholeGame;
     }
 
     public double getIncomeWholeGameNooneattack() {

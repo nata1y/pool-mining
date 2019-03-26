@@ -39,9 +39,10 @@ public class AttackingMiner extends Miner{
             }
         }
 
+        Pool ownPool = getSim().getPools().get(poolId);
+        Pool attackedPool = getSim().getPools().get(attackedPoolId);
+
         if(candidatePool != null){
-            Pool ownPool = getSim().getPools().get(poolId);
-            Pool attackedPool = getSim().getPools().get(attackedPoolId);
             ArrayList<Miner> attackedPoolMembers = attackedPool.getMembers();
 
             attackedPoolMembers.remove(this);
@@ -60,6 +61,13 @@ public class AttackingMiner extends Miner{
 
             getSim().getMiners().remove(this);
             getSim().getMiners().add(placeRoundRobin, newhm);
+        } else if(bestDen < 1/getSim().getMiners().size()){
+            ownPool.getSabotagers().remove(this);
+            attackedPool.getMembers().remove(this);
+            ownPool.getInfiltrationRates()[attackedPoolId] -= 1;
+            getSim().getMiners().remove(this);
+            SoloMiner sm = new SoloMiner(getSim(), getId());
+            getSim().getMiners().add(sm);
         }
     }
 

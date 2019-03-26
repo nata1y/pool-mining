@@ -55,7 +55,7 @@ public class Simulation extends Observable {
 
 	private void initialize(){
 		for(int i = 0; i < amountMiners; i++){
-			//int pool = i/(amountMiners/amountPools);
+			int pool = i/(amountMiners/amountPools);
 			//int pool = rand.nextInt(amountPools);
 
 			//50 m 4 p 30 sim
@@ -69,10 +69,10 @@ public class Simulation extends Observable {
 			if(i >= 6*amountMiners/10){
 				pool = 3;
 			}*/
-			int pool = 0;
+			/*int pool = 0;
 			if(i > bound){
 				pool = 1;
-			}
+			}*/
 			HonestMiner m = new HonestMiner(this, i, pool);
 			miners.add(m);
 		}
@@ -167,7 +167,7 @@ public class Simulation extends Observable {
 			}
 		}
 
-		if(isConverged && checkConvergence >= amountMiners){
+		if(isConverged && checkConvergence >= (amountMiners + amountSoloMiners)){
 			for(Pool p: pools){
 				System.out.println("id " + p.getId() + " " + (p.getMembers().size() + p.getSabotagers().size() - p.getOwnInfiltrationRate()));
 			}

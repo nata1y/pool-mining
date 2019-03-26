@@ -49,7 +49,9 @@ public abstract class Miner {
 	}
 
 	public void setRevenueInOwnPool(double revenueInOwnPool) {
-		this.revenueInOwnPool += revenueInOwnPool;
+		if(!Double.isNaN(revenueInOwnPool)){
+			this.revenueInOwnPool += revenueInOwnPool;
+		}
 	}
 
 	public double getfPoW() {
