@@ -29,11 +29,7 @@ public class SoloMiner extends Miner {
     }
 
     public void calculateOwnRevDen(){
-        double simAttackingPower = 0;
-        for(Pool p: getSim().getPools()){
-            simAttackingPower += p.getOwnInfiltrationRate();
-        }
-        setOwnRevDen(1 / (getSim().getMiners().size() - simAttackingPower));
+        setOwnRevDen(1 / getSim().getMiningPower());
     }
 
     public void changePool(int placeRoundRobin){

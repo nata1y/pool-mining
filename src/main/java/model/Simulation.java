@@ -55,8 +55,8 @@ public class Simulation extends Observable {
 
 	private void initialize(){
 		for(int i = 0; i < amountMiners; i++){
-			int pool = i/(amountMiners/amountPools);
-			//int pool = rand.nextInt(amountPools);
+			//int pool = i/(amountMiners/amountPools);
+			int pool = rand.nextInt(amountPools);
 
 			//50 m 4 p 30 sim
 			/*int pool = 0;
@@ -212,6 +212,16 @@ public class Simulation extends Observable {
 				isConverged = false;
 			}
 		}
+	}
+
+	public int getMiningPower(){
+		int miningPower = 0;
+		for(Miner m: miners){
+			if(!(m instanceof AttackingMiner)){
+				miningPower ++;
+			}
+		}
+		return miningPower;
 	}
 
 	public double[] getPoolRevenues() {

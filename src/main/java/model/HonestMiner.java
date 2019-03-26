@@ -49,11 +49,11 @@ public class HonestMiner extends Miner{
             this.poolId = candidatePool.getId();
             newMembers.remove(this);
             ownPool.setMembers(newMembers);
-        } else if(bestDen < 1/getSim().getMiners().size()){
+        } else if(bestDen < 1/getSim().getMiningPower()){
             getSim().getPools().get(poolId).getMembers().remove(this);
             getSim().getMiners().remove(this);
             SoloMiner sm = new SoloMiner(getSim(), getId());
-            getSim().getMiners().add(sm);
+            getSim().getMiners().add(placeRoundRobin, sm);
         }
     }
 
