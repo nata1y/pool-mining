@@ -116,7 +116,7 @@ public class Pool {
     /**
      * Update miners proof of work if they are done with the task.
      * Collect revenue if full proof of work satisfies.
-     * Update income for the whole game in case noone would attack.
+     * Update income for the whole game in case no one would attack.
      */
     public void updatePoF(){
         for(Miner m: members){
@@ -195,9 +195,7 @@ public class Pool {
         }
     }
 
-    public void updateFees(){
-
-    }
+    public void updateFees(){}
 
     /**
      * Publish own revenue (in the simulation).

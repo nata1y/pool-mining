@@ -6,22 +6,6 @@ import java.util.Random;
 import javafx.util.Pair;
 
 /**
- * precision 100 77 23
- * 
- * convergence take MUCH MORE time because i estimate it in a shitty way
- * should be better if allow all miners to switch pools
- * 
- * no solo miners 2 pools m=100 all gather in 1 pool (which initially has larger mining power)
- * EXCEPT 50%-50% when they all make half of the miners to attack and converge to the same size
- * 
- * 3 equally sized pools - all gather in 1
- * 
- * black magic with rev dens
- * 
- * if all have option to switch pool at one step, converge to one super pool very fast
- */
-
-/**
  * Main simulation class. Here, the simulation is initialized and proceed.
  */
 public class Simulation extends Observable {
@@ -57,6 +41,7 @@ public class Simulation extends Observable {
 	 * Based on the bound variable miners can be separated quantitetivelly into different pools. 
 	 */
 	private int bound;
+	private int bound2;
 	private Random rand = new Random();
 	/**
 	 * An integer that may be used for amount of steps normalization.
@@ -73,12 +58,13 @@ public class Simulation extends Observable {
 	 */
 	private final double revenueForBlock = 100;
 
-	public Simulation(int amountMiners, int amountPools, int amountSoloM, int bound){
+	public Simulation(int amountMiners, int amountPools, int amountSoloM, int bound, int bound2){
 		this.amountMiners = amountMiners;
 		this.amountPools = amountPools;
 		this.amountSoloMiners = amountSoloM;
 		this.isConverged = false;
 		this.bound = bound;
+		this.bound2 = bound2;
 		this.poolRevenues = new double[amountPools];
 		pools = new ArrayList<>(amountPools);
 		miners = new ArrayList<>(amountMiners);
@@ -90,20 +76,18 @@ public class Simulation extends Observable {
 	 */
 	private void initialize(){
 		for(int i = 0; i < amountMiners; i++){
-			int pool = i/(amountMiners/amountPools);
+			int pool = i % amountPools;
 			//int pool = rand.nextInt(amountPools);
 
 			//50 m 4 p 30 sim
 			/*int pool = 0;
-			if(i >= 2*amountMiners/10 && i < 4*amountMiners/10){
+			if(i >= bound && i < bound2){
 				pool = 1;
 			}
-			if(i >= 4*amountMiners/10 && i < 6*amountMiners/10){
+			if(i >= bound2){
 				pool = 2;
-			}
-			if(i >= 6*amountMiners/10){
-				pool = 3;
 			}*/
+			
 			/*int pool = 0;
 			if(i > bound){
 				pool = 1;
@@ -125,7 +109,7 @@ public class Simulation extends Observable {
 				}
 			}
 
-			Pool p = new Pool(this, i, 0.05, poolMiners);
+			Pool p = new Pool(this, i, i * 0.01, poolMiners);
 			pools.add(p);
 		}
 
@@ -209,7 +193,7 @@ public class Simulation extends Observable {
 		// Simulation has converged.
 		if(isConverged && checkConvergence >= (amountMiners + amountSoloMiners)){
 			for(Pool p: pools){
-				System.out.println("id " + p.getId() + " " + (p.getMembers().size() + p.getSabotagers().size() - p.getOwnInfiltrationRate()));
+				//System.out.println("id " + p.getId() + " " + (p.getMembers().size() + p.getSabotagers().size() - p.getOwnInfiltrationRate()));
 			}
 		} else {
 			isConverged = false;
@@ -217,6 +201,38 @@ public class Simulation extends Observable {
 
 		setChanged();
 		notifyObservers();
+		/*time ++;
+
+		for(Pool p: this.pools){
+			p.assignTasks();
+			p.roundOfWork();
+		}
+		int poolId = 0;
+		for(Pool p: this.pools){
+			p.updatePoF();
+			p.collectRevenueFromSabotagers();
+			this.poolRevenues[poolId] = p.publishRevenue();
+			poolId++;
+		}
+		for(Pool p: this.pools){
+			p.sendRevenueToAll();
+		}
+		if(time % s == 0){
+			pools.get(currentPoolRoundRobin).changeMiners();
+			currentPoolRoundRobin++;
+			if(currentPoolRoundRobin == pools.size()){
+				currentPoolRoundRobin = 0;
+				isConverged = true;
+				for (Pool p: pools){
+					if(p.getRevenueDensity() != p.getRevenueDensityPrevRound()){
+						isConverged = false;
+					}
+				}
+			} 
+		}
+
+		setChanged();
+		notifyObservers();*/
 	}
 
 	/**

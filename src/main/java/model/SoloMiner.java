@@ -51,8 +51,8 @@ public class SoloMiner extends Miner {
 
         // Loop through all pools and try to find own with higher revenue density. 
         for(Pool p: getSim().getPools()){
-            if(p.getRevenueDensity() > bestDen){
-                bestDen = p.getRevenueDensity();
+            if((p.getRevenueDensity()*(1 - p.getContributionFees())) > bestDen){
+                bestDen = p.getRevenueDensity()*(1 - p.getContributionFees());
                 candidatePool = p;
             }
         }

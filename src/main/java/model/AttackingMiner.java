@@ -38,7 +38,7 @@ public class AttackingMiner extends Miner{
      * Calculate own current revenue density.
      */
     public void calculateOwnRevDen(){
-		this.setOwnRevDen(getSim().getPools().get(poolId).getRevenueDensity()); 
+		this.setOwnRevDen(getSim().getPools().get(poolId).getRevenueDensity() * (1 - getSim().getPools().get(poolId).getContributionFees())); 
 	}
 
     /**
@@ -59,8 +59,8 @@ public class AttackingMiner extends Miner{
 
         // Loop through all pools and try to find own with higher revenue density.
         for(Pool p: getSim().getPools()){
-            if(p.getRevenueDensity() > bestDen || Double.isNaN(bestDen)){
-                bestDen = p.getRevenueDensity();
+            if((p.getRevenueDensity()*(1 - p.getContributionFees())) > bestDen || Double.isNaN(bestDen)){
+                bestDen = p.getRevenueDensity()*(1 - p.getContributionFees());
                 candidatePool = p;
             }
         }
