@@ -7,7 +7,7 @@ Program takes variable amount of pools and miners as input and simulates attacki
 In order to compile and run the code you need:
 - Java JDK 8 or higher
 - Maven
-- JBlass
+- JBlas
 
 Or instead you can run java executable with:
 
