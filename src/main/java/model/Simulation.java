@@ -77,10 +77,11 @@ public class Simulation extends Observable {
 	private void initialize(){
 		for(int i = 0; i < amountMiners; i++){
 			int pool = i % amountPools;
-			//int pool = rand.nextInt(amountPools);
 
-			//50 m 4 p 30 sim
+			//Options for dividing miners between pools
+
 			/*int pool = 0;
+			int pool = rand.nextInt(amountPools);
 			if(i >= bound && i < bound2){
 				pool = 1;
 			}
@@ -193,7 +194,8 @@ public class Simulation extends Observable {
 		// Simulation has converged.
 		if(isConverged && checkConvergence >= (amountMiners + amountSoloMiners)){
 			for(Pool p: pools){
-				//System.out.println("id " + p.getId() + " " + (p.getMembers().size() + p.getSabotagers().size() - p.getOwnInfiltrationRate()));
+				//For debug purposes
+				System.out.println("id " + p.getId() + " " + (p.getMembers().size() + p.getSabotagers().size() - p.getOwnInfiltrationRate()));
 			}
 		} else {
 			isConverged = false;
@@ -201,38 +203,6 @@ public class Simulation extends Observable {
 
 		setChanged();
 		notifyObservers();
-		/*time ++;
-
-		for(Pool p: this.pools){
-			p.assignTasks();
-			p.roundOfWork();
-		}
-		int poolId = 0;
-		for(Pool p: this.pools){
-			p.updatePoF();
-			p.collectRevenueFromSabotagers();
-			this.poolRevenues[poolId] = p.publishRevenue();
-			poolId++;
-		}
-		for(Pool p: this.pools){
-			p.sendRevenueToAll();
-		}
-		if(time % s == 0){
-			pools.get(currentPoolRoundRobin).changeMiners();
-			currentPoolRoundRobin++;
-			if(currentPoolRoundRobin == pools.size()){
-				currentPoolRoundRobin = 0;
-				isConverged = true;
-				for (Pool p: pools){
-					if(p.getRevenueDensity() != p.getRevenueDensityPrevRound()){
-						isConverged = false;
-					}
-				}
-			} 
-		}
-
-		setChanged();
-		notifyObservers();*/
 	}
 
 	/**
