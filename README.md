@@ -9,6 +9,6 @@ In order to compile and run the code you need:
 - Maven
 - JBlas
 
-Or instead you can run java executable with:
+Alternatively, you can run java executable from github with (JBlas is required):
 
 java -cp simulation_pool_mining.jar Main
