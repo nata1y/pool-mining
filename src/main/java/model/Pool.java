@@ -332,7 +332,7 @@ public class Pool {
         return res.get(id);
     }
 
-/**
+/** Hard coded option for 2 pools in the system for debugging purposes
 
     public double calculateExpectedRevenueDensityHardCoded(int[] rates){
         Pool p;

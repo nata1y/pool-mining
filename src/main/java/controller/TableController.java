@@ -67,9 +67,6 @@ public class TableController extends JPanel{
                 "Number of mining members",
                 "Revenue",
                 "Number of attacking miners",
-                "Fee",
-                "Current revenue density",
-                "Revenue if no one attack",
                 "Cuurent revenue for the whole game",
                 "Revenue for the whole game if noone attack"
         };
@@ -116,14 +113,8 @@ public class TableController extends JPanel{
                 case 3:
                     return pool.getSabotagers().size();
                 case 4:
-                    return pool.getContributionFees();
-                case 5:
-                    return pool.getRevenueDensity();
-                case 6:
-                    return pool.getRevenueDensityIfNooneAttack();
-                case 7:
                     return pool.getIncomeWholeGame();
-                case 8:
+                case 5:
                     return pool.getIncomeWholeGameNooneattack();
                 default:
                     return null;

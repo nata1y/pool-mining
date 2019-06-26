@@ -81,7 +81,7 @@ public class MainController implements Observer {
                 new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         try {
-                            startSimulations(Integer.parseInt(miners.getText()), Integer.parseInt(pools.getText()), Integer.parseInt(solom.getText()), Integer.parseInt(runs.getText()), 1, 2);
+                            startSimulations(Integer.parseInt(miners.getText()), Integer.parseInt(pools.getText()), Integer.parseInt(solom.getText()), Integer.parseInt(runs.getText()));
                             setup.dispose();
                         } catch (RuntimeException ex) {
                             ex.printStackTrace(System.err);
@@ -103,13 +103,12 @@ public class MainController implements Observer {
     /**
      * Create simulation with given parameters.
      */
-    public void startSimulations(int amountAgents, int amountPools, int amountSoloM, int amountSim, int bound, int bound2) {
+    public void startSimulations(int amountAgents, int amountPools, int amountSoloM, int amountSim) {
         this.amountAgents = amountAgents;
         this.amountPools = amountPools;
-        this.bound = bound;
         this.amountSim = amountSim - 1;
 
-        currentSimulation = new Simulation(amountAgents, amountPools, amountSoloM, bound, bound2);
+        currentSimulation = new Simulation(amountAgents, amountPools, amountSoloM);
         currentSimulation.addObserver(this);
         window = createAndShowGUI();
     }
@@ -158,12 +157,12 @@ public class MainController implements Observer {
                 System.out.println("Convergence Time: " + currentSimulation.getTime());
                 if(counter > 1){
                     counter --;
-                    startSimulations(amountAgents, amountPools, amountSoloM, amountSim, bound, b);
+                    startSimulations(amountAgents, amountPools, amountSoloM, amountSim);
                 } else {
                     counter = 1;
                     bound ++;
-                    System.out.println("________ new dist: " + bound);
-                    startSimulations(amountAgents, amountPools, 0, amountSim, bound, b);
+                    //System.out.println("________ new dist: " + bound);
+                    startSimulations(amountAgents, amountPools, 0, amountSim);
                 }
                 
             }

@@ -58,7 +58,7 @@ public class Simulation extends Observable {
 	 */
 	private final double revenueForBlock = 100;
 
-	public Simulation(int amountMiners, int amountPools, int amountSoloM, int bound, int bound2){
+	public Simulation(int amountMiners, int amountPools, int amountSoloM){
 		this.amountMiners = amountMiners;
 		this.amountPools = amountPools;
 		this.amountSoloMiners = amountSoloM;
